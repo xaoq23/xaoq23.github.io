@@ -16,7 +16,7 @@ timezone:
 
 title: Xaoq23`s Blog  # the main title
 
-tagline: no tag # it will display as the subtitle
+tagline: "Stay hungry, stay foolish." # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
  
@@ -98,7 +98,7 @@ theme_mode: # [light | dark]
 cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar: /assets/img.jpg
+avatar: ./assets/img/avater.jpg
   
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.
