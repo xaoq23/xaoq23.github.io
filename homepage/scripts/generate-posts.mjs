@@ -5,7 +5,7 @@ import grayMatter from "gray-matter";
 import { marked } from "marked";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, "..");
+const root = join(__dirname, "..", "..");
 const postsDir = join(root, "_posts");
 const outDir = join(root, "homepage", "src", "data");
 const outFile = join(outDir, "posts.json");
@@ -25,7 +25,7 @@ const posts = files.map((file) => {
   const html = marked.parse(content, { breaks: true });
 
   const firstP = html.match(/<p>(.*?)<\/p>/);
-  const excerpt = firstP ? firstP[1].replace(/<[^>]+>/, "") : "";
+  const excerpt = firstP ? firstP[1].replace(/<[^>]+>/g, "") : "";
 
   return {
     slug,
@@ -45,4 +45,4 @@ posts.sort((a, b) => {
 });
 
 writeFileSync(outFile, JSON.stringify(posts, null, 2));
-console.log(`Generated ${posts.length} posts → ${outFile}`);
+console.log(`Generated ${posts.length} posts -> ${outFile}`);
