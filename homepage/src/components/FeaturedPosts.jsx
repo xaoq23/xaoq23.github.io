@@ -1,10 +1,10 @@
 const posts = [
   {
-    title: "欢迎来到我的博客",
-    desc: "这是我的个人博客，用于记录技术学习和编程思考。",
-    date: "2026-05-31",
+    title: "Hello World",
+    desc: "这是我的第一篇博客文章。使用 Jekyll + Chirpy 主题搭建，前端首页由 React 驱动。",
+    date: "2024-01-01",
     tags: ["杂谈"],
-    url: "/posts/",
+    url: "/posts/hello-world/",
   },
 ];
 
