@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 const navLinks = [
@@ -10,13 +11,29 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const close = () => setMenuOpen(false);
+
   return (
     <header className="header">
       <div className="header-inner">
-        <NavLink to="/" className="logo">Xaoq23`s Blog</NavLink>
-        <nav className="nav">
+        <NavLink to="/" className="logo" onClick={close}>
+          Xaoq23`s Blog
+        </NavLink>
+        <button
+          className={`hamburger ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="菜单"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        {menuOpen && <div className="nav-overlay" onClick={close} />}
+        <nav className={`nav ${menuOpen ? "nav--open" : ""}`}>
           {navLinks.map((link) => (
-            <NavLink key={link.to} to={link.to} className="nav-link">
+            <NavLink key={link.to} to={link.to} className="nav-link" onClick={close}>
               {link.label}
             </NavLink>
           ))}
