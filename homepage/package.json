@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/generate-posts.mjs",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "regenerate": "node scripts/generate-posts.mjs"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

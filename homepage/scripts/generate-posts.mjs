@@ -1,5 +1,5 @@
-import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "fs";
-import { join, dirname } from "path";
+import { readFileSync, readdirSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync } from "fs";
+import { join, dirname, relative } from "path";
 import { fileURLToPath } from "url";
 import grayMatter from "gray-matter";
 import { marked } from "marked";
@@ -9,8 +9,29 @@ const root = join(__dirname, "..", "..");
 const postsDir = join(root, "_posts");
 const outDir = join(root, "homepage", "src", "data");
 const outFile = join(outDir, "posts.json");
+const assetsSrc = join(root, "assets");
+const assetsDest = join(root, "homepage", "public", "assets");
 
 mkdirSync(outDir, { recursive: true });
+
+function copyDir(src, dest) {
+  if (!existsSync(src)) return;
+  mkdirSync(dest, { recursive: true });
+  for (const entry of readdirSync(src)) {
+    const s = join(src, entry);
+    const d = join(dest, entry);
+    if (statSync(s).isDirectory()) {
+      copyDir(s, d);
+    } else {
+      copyFileSync(s, d);
+    }
+  }
+}
+
+if (existsSync(assetsSrc)) {
+  copyDir(assetsSrc, assetsDest);
+  console.log(`Copied assets -> ${assetsDest}`);
+}
 
 const files = readdirSync(postsDir).filter((f) => f.endsWith(".md") && f !== ".placeholder.md");
 
