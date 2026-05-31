@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 const chirpyLinks = [
+  { label: "文章", to: "/" },
   { label: "归档", to: "/archives/" },
   { label: "分类", to: "/categories/" },
   { label: "标签", to: "/tags/" },

@@ -3,7 +3,7 @@ export default function Hero() {
     <section className="hero">
       <div className="hero-content">
         <img
-          src="./assets/img/avater.jpg"
+          src="/assets/img/avater.jpg"
           alt="avatar"
           className="hero-avatar"
         />

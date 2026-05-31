@@ -4,7 +4,7 @@ export default function AboutPage() {
       <h2 className="section-title">关于</h2>
       <div className="about-content">
         <img
-          src="./assets/img/avater.jpg"
+          src="/assets/img/avater.jpg"
           alt="avatar"
           className="about-avatar"
         />
