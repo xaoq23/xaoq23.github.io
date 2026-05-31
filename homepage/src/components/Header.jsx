@@ -30,12 +30,12 @@ export default function Header() {
         </button>
         {menuOpen && <div className="nav-overlay" onClick={close} />}
         <nav className={`nav ${menuOpen ? "nav--open" : ""}`}>
-          <a href="/" className="nav-link" onClick={close}>
-            首页
-          </a>
           <NavLink to="/" className="nav-link" end onClick={close}>
             展示页
           </NavLink>
+          <a href="/" className="nav-link" onClick={close}>
+            首页
+          </a>
           {chirpyLinks.map((link) => (
             <a key={link.to} href={link.to} className="nav-link" onClick={close}>
               {link.label}
