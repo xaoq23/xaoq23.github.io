@@ -12,10 +12,6 @@ export default function Hero() {
         <p className="hero-desc">
           记录技术成长，分享编程思考
         </p>
-        <div className="hero-actions">
-          <a href="/posts/" className="btn btn-primary">浏览文章</a>
-          <a href="/about/" className="btn btn-secondary">关于我</a>
-        </div>
       </div>
     </section>
   );
