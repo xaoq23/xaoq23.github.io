@@ -2,7 +2,6 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 const chirpyLinks = [
-  { label: "文章", to: "/" },
   { label: "归档", to: "/archives/" },
   { label: "分类", to: "/categories/" },
   { label: "标签", to: "/tags/" },
@@ -17,9 +16,9 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-inner">
-        <NavLink to="/" className="logo" onClick={close}>
+        <a href="/" className="logo" onClick={close}>
           Xaoq23`s Blog
-        </NavLink>
+        </a>
         <button
           className={`hamburger ${menuOpen ? "open" : ""}`}
           onClick={() => setMenuOpen((v) => !v)}
@@ -31,8 +30,11 @@ export default function Header() {
         </button>
         {menuOpen && <div className="nav-overlay" onClick={close} />}
         <nav className={`nav ${menuOpen ? "nav--open" : ""}`}>
-          <NavLink to="/" className="nav-link" end onClick={close}>
+          <a href="/" className="nav-link" onClick={close}>
             首页
+          </a>
+          <NavLink to="/" className="nav-link" end onClick={close}>
+            展示页
           </NavLink>
           {chirpyLinks.map((link) => (
             <a key={link.to} href={link.to} className="nav-link" onClick={close}>
