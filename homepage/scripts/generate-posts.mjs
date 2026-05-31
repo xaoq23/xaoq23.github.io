@@ -18,9 +18,10 @@ const posts = files.map((file) => {
   const raw = readFileSync(join(postsDir, file), "utf-8");
   const { data, content } = grayMatter(raw);
 
-  const match = file.match(/^(\d{4}-\d{2}-\d{2})-(.+)\.md$/);
+  const dateStr = typeof data.date === "string" ? data.date.slice(0, 10) : "";
+  const match = file.match(/^(\d{4}-\d{1,2}-\d{1,2})-(.+)\.md$/);
   const slug = match ? match[2] : file.replace(/\.md$/, "");
-  const date = data.date ? new Date(data.date).toISOString().split("T")[0] : match?.[1] || "";
+  const date = dateStr || match?.[1] || "";
 
   const html = marked.parse(content, { breaks: true });
 

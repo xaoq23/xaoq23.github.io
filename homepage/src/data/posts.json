@@ -1,6 +1,6 @@
 [
   {
-    "slug": "2026-5-31-test",
+    "slug": "test",
     "title": "Test",
     "date": "2026-05-31",
     "categories": [
@@ -16,7 +16,7 @@
   {
     "slug": "hello-world",
     "title": "Hello World",
-    "date": "2023-12-31",
+    "date": "2024-01-01",
     "categories": [
       "杂谈"
     ],
