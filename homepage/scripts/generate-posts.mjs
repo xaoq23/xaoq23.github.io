@@ -3,6 +3,17 @@ import { join, dirname, relative } from "path";
 import { fileURLToPath } from "url";
 import grayMatter from "gray-matter";
 import { marked } from "marked";
+import hljs from "highlight.js";
+
+const renderer = new marked.Renderer();
+renderer.code = (token) => {
+  const lang = token.lang || "";
+  const code = lang && hljs.getLanguage(lang)
+    ? hljs.highlight(token.text, { language: lang }).value
+    : token.text;
+  const langAttr = lang ? ` data-language="${lang}"` : "";
+  return `<pre${langAttr}><code class="language-${lang}">${code}</code></pre>`;
+};
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..", "..");
@@ -44,7 +55,7 @@ const posts = files.map((file) => {
   const slug = match ? match[2] : file.replace(/\.md$/, "");
   const date = dateStr || match?.[1] || "";
 
-  const html = marked.parse(content, { breaks: true });
+  const html = marked.parse(content, { breaks: true, renderer });
 
   const firstP = html.match(/<p>(.*?)<\/p>/);
   const excerpt = firstP ? firstP[1].replace(/<[^>]+>/g, "") : "";
