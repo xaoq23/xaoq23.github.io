@@ -203,6 +203,12 @@ a {
   text-decoration: underline;
 }
 
+.btn-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
 /* Featured Posts */
 .featured-posts {
   max-width: var(--max-width);

@@ -7,7 +7,16 @@ export default function Hero() {
         <img src={site.avatar} alt="avatar" className="hero-avatar" />
         <h1 className="hero-title">{site.title}</h1>
         <p className="hero-tagline">{site.tagline}</p>
-        <p className="hero-desc">{site.description}</p>
+        <div className="hero-actions">
+          <a href={`https://github.com/${site.social.github}`} target="_blank" rel="noreferrer" className="btn btn-primary">
+            <img src="/assets/img/github.svg" alt="GitHub" className="btn-icon" />
+            我的主页
+          </a>
+          <a href={`mailto:${site.social.email}`} className="btn btn-primary">
+            <img src="/assets/img/gmail.ico" alt="Email" className="btn-icon" />
+            联系我
+          </a>
+        </div>
       </div>
     </section>
   );
