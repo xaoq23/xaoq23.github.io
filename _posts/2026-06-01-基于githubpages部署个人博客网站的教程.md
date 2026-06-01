@@ -1,9 +1,9 @@
 ---
-
-## title: 基于github pages部署个人博客网站的教程
+title: 基于github pages部署个人博客网站的教程
 date: 2026-06-01 18:53 +0800
 categories: [前端]
-tags: [前端],[教学],[个人建站]
+tags: [前端, 教学, 个人建站]
+---
 
 # 基于github pages部署个人博客网站的教程
 
