@@ -1,6 +1,14 @@
+import { useState } from "react";
 import { site } from "../config/site.js";
 
 export default function Hero() {
+  const [btnText, setBtnText] = useState("联系我");
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(site.social.email);
+    setBtnText("邮箱复制成功");
+  };
+
   return (
     <section className="hero">
       <div className="hero-content">
@@ -12,10 +20,10 @@ export default function Hero() {
             <img src="/assets/img/github.svg" alt="GitHub" className="btn-icon" />
             我的主页
           </a>
-          <a href={`mailto:${site.social.email}`} className="btn btn-primary">
+          <button type="button" className="btn btn-primary" onClick={handleCopyEmail} onMouseLeave={() => setBtnText("联系我")}>
             <img src="/assets/img/gmail.ico" alt="Email" className="btn-icon" />
-            联系我
-          </a>
+            {btnText}
+          </button>
         </div>
       </div>
     </section>
