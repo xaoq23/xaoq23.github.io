@@ -459,17 +459,68 @@ a {
 .article-content pre {
   background: #1a1a2e;
   color: #e4e4e7;
-  padding: 16px;
+  padding: 40px 16px 16px;
   border-radius: var(--radius);
   overflow-x: auto;
   margin-bottom: 20px;
+  position: relative;
 }
 
 .article-content pre code {
   background: none;
   padding: 0;
   font-size: 0.85rem;
+  font-family: "Fira Code", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
 }
+
+.article-content pre::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  letter-spacing: 1px;
+  font-family: inherit;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-type { color: #c792ea; }
+
+.hljs-string,
+.hljs-addition { color: #c3e88d; }
+
+.hljs-comment,
+.hljs-quote { color: #546e7a; font-style: italic; }
+
+.hljs-number,
+.hljs-literal { color: #f78c6c; }
+
+.hljs-built_in { color: #82aaff; }
+
+.hljs-title.function_ { color: #ffcb6b; }
+
+.hljs-operator { color: #89ddff; }
+
+.hljs-attr { color: #b2ccd6; }
+
+.hljs-variable,
+.hljs-template-variable { color: #f07178; }
+
+.hljs-deletion { color: #f07178; }
+
+.hljs-section { color: #ffcb6b; font-weight: bold; }
+
+.hljs-link { text-decoration: underline; }
+
+.hljs-meta { color: #89ddff; }
+
+.hljs-emphasis { font-style: italic; }
+
+.hljs-strong { font-weight: bold; }
 
 .article-content blockquote {
   border-left: 3px solid var(--primary);
