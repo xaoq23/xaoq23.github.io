@@ -3,19 +3,33 @@
   {{ $email := site.Params.author.email }}
   <div class="home">
     <section class="home-hero" aria-labelledby="home-title">
-      <p class="home-eyebrow">{{ site.Params.hero.eyebrow | default (i18n "home.eyebrow") }}</p>
-      <h1 id="home-title" class="home-title">{{ site.Params.hero.title | default site.Title }}</h1>
-      <p class="home-lede">{{ site.Params.hero.lede | default site.Params.author.bio }}</p>
-      <ul class="home-links">
-        <li><a href="{{ "posts/" | relLangURL }}">{{ i18n "home.posts_link" }}</a></li>
-        <li><a href="{{ "about/" | relLangURL }}">{{ i18n "home.about_link" }}</a></li>
-        {{ with $email }}
-          <li>
-            <a href="mailto:{{ . }}" aria-label="{{ i18n "home.email_aria" }}">{{ . }}</a>
-          </li>
-        {{ end }}
-        <li><a href="https://github.com/xaoq23">GitHub</a></li>
-      </ul>
+      <div class="home-hero-text">
+        <p class="home-eyebrow">{{ site.Params.hero.eyebrow | default (i18n "home.eyebrow") }}</p>
+        <h1 id="home-title" class="home-title">{{ site.Params.hero.title | default site.Title }}</h1>
+        <p class="home-lede">{{ site.Params.hero.lede | default site.Params.author.bio }}</p>
+        <ul class="home-links">
+          <li><a href="{{ "posts/" | relLangURL }}">{{ i18n "home.posts_link" }}</a></li>
+          <li><a href="{{ "about/" | relLangURL }}">{{ i18n "home.about_link" }}</a></li>
+          {{ with $email }}
+            <li>
+              <a href="mailto:{{ . }}" aria-label="{{ i18n "home.email_aria" }}">{{ . }}</a>
+            </li>
+          {{ end }}
+          <li><a href="https://github.com/xaoq23">GitHub</a></li>
+        </ul>
+      </div>
+      {{ with resources.Get "img/portrait.png" }}
+        {{ $portrait := . | fingerprint }}
+        <img
+          class="home-portrait"
+          src="{{ $portrait.RelPermalink }}"
+          width="{{ .Width }}"
+          height="{{ .Height }}"
+          alt="{{ i18n "home.portrait_alt" }}"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high">
+      {{ end }}
     </section>
 
     {{ partial "bento.html" . }}

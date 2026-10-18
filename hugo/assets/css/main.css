@@ -114,8 +114,38 @@ main#main-content {
 }
 
 .home-hero {
-  max-width: var(--measure);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  max-width: var(--measure-wide);
   margin-bottom: var(--space-10);
+  align-items: center;
+}
+
+.home-hero-text {
+  max-width: var(--measure);
+}
+
+.home-portrait {
+  width: min(100%, 16rem);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-raised);
+  box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 900px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+  }
+
+  .home-portrait {
+    width: 16rem;
+    justify-self: end;
+  }
 }
 
 .home-eyebrow {
