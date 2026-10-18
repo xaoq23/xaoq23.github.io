@@ -1,0 +1,17 @@
+{{/* Minimal editorial pagination. Hugo no longer ships _internal/pagination.html. */}}
+{{ $p := .Paginator }}
+{{ if gt $p.TotalPages 1 }}
+  <nav class="pagination" aria-label="Pagination">
+    {{ with $p.Prev }}
+      <a class="pagination-link" href="{{ .URL }}" rel="prev">&larr; Newer</a>
+    {{ else }}
+      <span class="pagination-link is-disabled" aria-hidden="true">&larr; Newer</span>
+    {{ end }}
+    <span class="pagination-status">Page {{ $p.PageNumber }} of {{ $p.TotalPages }}</span>
+    {{ with $p.Next }}
+      <a class="pagination-link" href="{{ .URL }}" rel="next">Older &rarr;</a>
+    {{ else }}
+      <span class="pagination-link is-disabled" aria-hidden="true">Older &rarr;</span>
+    {{ end }}
+  </nav>
+{{ end }}

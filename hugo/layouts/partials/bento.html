@@ -1,0 +1,34 @@
+{{/*
+  Bento island fallback.
+
+  Hugo renders the full grid first (works without JavaScript, indexes in
+  search, no layout shift), then the React entry hydrates the same <ul> and
+  takes over its contents. Data travels via `data-*` attributes — the only
+  channel islands are allowed to use.
+*/}}
+{{ $section := hugo.Data.bento }}
+{{ $items := $section.items }}
+{{ $linkLabel := $section.linkLabel | default "Read more" }}
+<section class="home-section bento" aria-labelledby="bento-heading">
+  <div class="section-head">
+    <h2 class="section-heading" id="bento-heading">{{ $section.heading | default "Currently" }}</h2>
+    <span class="section-meta">{{ len $items }} threads</span>
+  </div>
+  <ul
+    class="bento-grid"
+    data-island="bento"
+    data-items="{{ $items | jsonify }}"
+    data-link-label="{{ $linkLabel }}">
+    {{ range $items }}
+      <li class="bento-card">
+        <span class="bento-kicker">{{ .kicker }}</span>
+        <h3 class="bento-title">{{ .title }}</h3>
+        <p class="bento-text">{{ .text }}</p>
+        {{ with .href }}
+          <a class="bento-link" href="{{ . }}">{{ $linkLabel }} &rarr;</a>
+        {{ end }}
+      </li>
+    {{ end }}
+  </ul>
+</section>
+{{ partial "island-script.html" (dict "name" "bento") }}

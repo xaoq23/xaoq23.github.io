@@ -1,0 +1,140 @@
+/*
+ * tokens.css — the single source of design tokens for the whole site.
+ *
+ * Rules:
+ *  - Every colour, font, spacing and motion value used anywhere lives here.
+ *  - Islands import this same file (Vite alias `@tokens`), so React never
+ *    introduces a parallel palette.
+ *  - Spacing is expressed as multiples of --space-unit (8px). Do not add raw
+ *    pixel spacing values in other stylesheets.
+ *  - The "theme bridge" block at the bottom re-maps the vendored Blowfish
+ *    palette onto these tokens so theme chrome and our own components agree.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Typography ------------------------------------------------------ */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: var(--font-sans);
+
+  --text-base: 17px;
+  --text-scale: 1.25;
+  --text-xs: calc(var(--text-base) / var(--text-scale) / var(--text-scale));
+  --text-sm: calc(var(--text-base) / var(--text-scale));
+  --text-md: var(--text-base);
+  --text-lg: calc(var(--text-base) * var(--text-scale));
+  --text-xl: calc(var(--text-lg) * var(--text-scale));
+  --text-2xl: calc(var(--text-xl) * var(--text-scale));
+  --text-3xl: calc(var(--text-2xl) * var(--text-scale));
+
+  --leading-body: 1.75;
+  --leading-snug: 1.4;
+  --leading-tight: 1.1;
+  --tracking-tight: -0.015em;
+  --tracking-heading: -0.03em;
+  --tracking-wide: 0.08em;
+
+  /* ---- Space (8px grid only) ------------------------------------------- */
+  --space-unit: 8px;
+  --space-1: var(--space-unit);
+  --space-2: calc(var(--space-unit) * 2);
+  --space-3: calc(var(--space-unit) * 3);
+  --space-4: calc(var(--space-unit) * 4);
+  --space-5: calc(var(--space-unit) * 5);
+  --space-6: calc(var(--space-unit) * 6);
+  --space-8: calc(var(--space-unit) * 8);
+  --space-10: calc(var(--space-unit) * 10);
+  --space-12: calc(var(--space-unit) * 12);
+  --space-16: calc(var(--space-unit) * 16);
+
+  /* ---- Layout ---------------------------------------------------------- */
+  --measure: 44rem; /* 704px reading column */
+  --measure-wide: 68rem;
+  --page-gutter: var(--space-3);
+  --header-height: var(--space-8);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-pill: 999px;
+
+  /* ---- Colour: light --------------------------------------------------- */
+  --color-bg: #fafafa;
+  --color-bg-raised: #ffffff;
+  --color-fg: #18181b;
+  --color-fg-strong: #09090b;
+  --color-muted: #71717a;
+  --color-subtle: #a1a1aa;
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-soft: #eff6ff;
+  --color-accent-contrast: #ffffff;
+  --color-code-bg: #f4f4f5;
+  --color-code-fg: #27272a;
+  --color-selection: #bfdbfe;
+  --color-focus: #2563eb;
+
+  /* ---- Elevation & motion ---------------------------------------------- */
+  --shadow-sm: 0 1px 2px rgb(24 24 27 / 6%);
+  --shadow-md: 0 12px 32px -20px rgb(24 24 27 / 28%);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 320ms;
+
+  /* ---- Theme bridge: vendored Blowfish palette (RGB triplets) ---------- */
+  --color-neutral: 250, 250, 250;
+  --color-neutral-50: 250, 250, 250;
+  --color-neutral-100: 244, 244, 245;
+  --color-neutral-200: 228, 228, 231;
+  --color-neutral-300: 212, 212, 216;
+  --color-neutral-400: 161, 161, 170;
+  --color-neutral-500: 113, 113, 122;
+  --color-neutral-600: 82, 82, 91;
+  --color-neutral-700: 63, 63, 70;
+  --color-neutral-800: 39, 39, 42;
+  --color-neutral-900: 24, 24, 27;
+  --color-primary-50: 239, 246, 255;
+  --color-primary-100: 219, 234, 254;
+  --color-primary-200: 191, 219, 254;
+  --color-primary-300: 147, 197, 253;
+  --color-primary-400: 96, 165, 250;
+  --color-primary-500: 59, 130, 246;
+  --color-primary-600: 37, 99, 235;
+  --color-primary-700: 29, 78, 216;
+  --color-primary-800: 30, 64, 175;
+  --color-primary-900: 30, 58, 138;
+}
+
+/*
+ * Dark mode: both selectors are intentional.
+ * Blowfish toggles `html.dark`; the architecture contract requires
+ * `html[data-theme="dark"]`. A small vanilla script keeps them in sync, so
+ * either selector matches and there is never a flash of the wrong theme.
+ */
+html.dark,
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0f1115;
+  --color-bg-raised: #16181d;
+  --color-fg: #e4e4e7;
+  --color-fg-strong: #fafafa;
+  --color-muted: #a1a1aa;
+  --color-subtle: #71717a;
+  --color-border: #27272a;
+  --color-border-strong: #3f3f46;
+  --color-accent: #60a5fa;
+  --color-accent-hover: #93c5fd;
+  --color-accent-soft: #17233b;
+  --color-accent-contrast: #0b1220;
+  --color-code-bg: #18181b;
+  --color-code-fg: #e4e4e7;
+  --color-selection: #1e3a8a;
+  --color-focus: #60a5fa;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-md: 0 12px 32px -20px rgb(0 0 0 / 60%);
+}

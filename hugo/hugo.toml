@@ -1,0 +1,97 @@
+# Site configuration — Hugo owns all content, routing and static HTML.
+# React islands are mounted only on elements Hugo marks with data-island.
+
+baseURL = "https://xaoq23.github.io/"
+title = "xaoq23"
+theme = "blowfish"
+
+defaultContentLanguage = "en"
+locale = "en-US"
+enableRobotsTXT = true
+enableEmoji = true
+summaryLength = 0
+
+[pagination]
+  pagerSize = 10
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+
+[sitemap]
+  changefreq = "weekly"
+  filename = "sitemap.xml"
+  priority = 0.5
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = false
+  [markup.highlight]
+    noClasses = false
+    lineNos = false
+  [markup.tableOfContents]
+    ordered = false
+    startLevel = 2
+    endLevel = 3
+
+[params]
+  colorScheme = "blowfish"
+  defaultAppearance = "light"
+  autoSwitchAppearance = true
+  fingerprintAlgorithm = "sha256"
+  disableImageZoom = true
+  enableSearch = false
+  enableCodeCopy = true
+  enableStyledScrollbar = false
+
+  [params.header]
+    layout = "basic"
+
+  [params.footer]
+    showMenu = true
+    showCopyright = true
+    showThemeAttribution = true
+    showAppearanceSwitcher = true
+    showScrollToTop = true
+
+  [params.article]
+    showDate = true
+    showAuthor = false
+    showReadingTime = true
+    showWordCount = false
+    showBreadcrumbs = false
+    showTableOfContents = true
+    showTaxonomies = true
+    showHero = false
+    showZenMode = false
+    showReadingProgress = true
+
+  [params.list]
+    showHero = false
+
+  [params.hero]
+    eyebrow = "Notes"
+    title = "Software, systems, and the occasional yak shave."
+    lede = "A working notebook on programming, tooling and building things on the web. Static by default, interactive only where it earns its keep."
+
+  [params.author]
+    name = "xaoq23"
+    headline = "Software, systems, and the occasional yak shave."
+    bio = "Notes on programming, tooling and building things on the web."
+    links = [
+      { github = "https://github.com/xaoq23" },
+    ]
+
+[[menus.main]]
+  name = "Posts"
+  pageRef = "posts"
+  weight = 10
+
+[[menus.main]]
+  name = "About"
+  pageRef = "about"
+  weight = 20

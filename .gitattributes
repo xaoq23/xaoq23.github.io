@@ -1,0 +1,7 @@
+# Keep text files LF so local Windows checkouts and Linux CI agree.
+* text=auto eol=lf
+
+# PowerShell scripts, if they ever land here, need CRLF.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf

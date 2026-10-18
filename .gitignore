@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# pnpm writes a self-referential lockfile at the repo root because the root
+# package.json has no dependencies; the real lockfile is islands/pnpm-lock.yaml.
+/pnpm-lock.yaml
+
+# Local toolchain (portable Hugo binary downloaded for this machine) and caches
+.tools/
+.cache/
+
+# Build output — never commit generated files
+hugo/public/
+hugo/resources/
+hugo/.hugo_build.lock
+hugo/static/islands/
+islands/dist/
+
+# Logs and OS noise
+*.log
+.DS_Store
+Thumbs.db

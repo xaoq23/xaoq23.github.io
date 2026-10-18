@@ -1,0 +1,33 @@
+{{/*
+  Site CSS bundle + theme compatibility layer.
+
+  Blowfish loads its own Tailwind bundle in head.html. This partial appends the
+  token-driven stylesheet afterwards, so our later-equal-specificity rules win,
+  and mirrors Blowfish's `.dark` class onto the `data-theme` attribute required
+  by the architecture contract.
+*/}}
+{{- $tokens := resources.Get "css/tokens.css" -}}
+{{- $main := resources.Get "css/main.css" -}}
+{{- $css := slice $tokens $main | resources.Concat "css/site.css" | minify | fingerprint "sha256" -}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link
+  rel="stylesheet"
+  href="{{ $css.RelPermalink }}"
+  integrity="{{ $css.Data.Integrity }}">
+<script>
+  // Theme compatibility layer (no framework, no React):
+  // Blowfish toggles `html.dark` and persists `localStorage.appearance`.
+  // The architecture contract requires `html[data-theme]`, so mirror it.
+  (function () {
+    var root = document.documentElement;
+    function sync() {
+      root.setAttribute("data-theme", root.classList.contains("dark") ? "dark" : "light");
+    }
+    sync();
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ["class"] });
+  })();
+</script>

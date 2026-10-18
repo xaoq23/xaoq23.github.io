@@ -1,0 +1,42 @@
+{{ define "main" }}
+  <div class="home">
+    <section class="home-hero" aria-labelledby="home-title">
+      <p class="home-eyebrow">{{ site.Params.hero.eyebrow | default "Notes" }}</p>
+      <h1 id="home-title" class="home-title">{{ site.Params.hero.title | default site.Title }}</h1>
+      <p class="home-lede">{{ site.Params.hero.lede | default site.Params.author.bio }}</p>
+      <ul class="home-links">
+        <li><a href="{{ "posts/" | relURL }}">Read the posts</a></li>
+        <li><a href="{{ "about/" | relURL }}">About</a></li>
+        <li><a href="https://github.com/xaoq23">GitHub</a></li>
+      </ul>
+    </section>
+
+    {{ partial "bento.html" . }}
+
+    {{ $posts := where site.RegularPages "Section" "posts" }}
+    {{ $latest := first 4 ($posts.ByDate.Reverse) }}
+    {{ with $latest }}
+      <section class="home-section" aria-labelledby="latest-posts">
+        <div class="section-head">
+          <h2 class="section-heading" id="latest-posts">Latest writing</h2>
+          <a class="section-link" href="{{ "posts/" | relURL }}">All posts &rarr;</a>
+        </div>
+        <ul class="post-list">
+          {{ range . }}
+            <li class="post-item">
+              <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">
+                {{- .Date.Format "2006-01-02" -}}
+              </time>
+              <div>
+                <h3 class="post-item-title">
+                  <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </h3>
+                <p class="post-summary">{{ .Summary | plainify | truncate 160 }}</p>
+              </div>
+            </li>
+          {{ end }}
+        </ul>
+      </section>
+    {{ end }}
+  </div>
+{{ end }}
