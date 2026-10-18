@@ -1,23 +1,24 @@
 # Homepage bento content, one section per language.
-# UI labels live in i18n/{en,zh}.yaml; only editorial copy belongs here.
+# UI labels live in i18n/{en-US,zh-CN}.yaml; only editorial copy belongs here.
+# Links are absolute because both languages now live in peer subpaths.
 en:
   items:
     - kicker: "Building"
       title: "This site"
       text: "Hugo renders the pages; React is confined to a handful of islands."
-      href: "/about/"
+      href: "/en/about/"
     - kicker: "Writing"
       title: "Notes and post-mortems"
       text: "Mostly programming, tooling, and decisions that aged badly or well."
-      href: "/posts/"
+      href: "/en/posts/"
     - kicker: "Reading"
       title: "The Hugo docs"
       text: "Template lookup order, resource pipelines, and output formats."
-      href: "/posts/"
+      href: "/en/posts/"
     - kicker: "Toolchain"
       title: "pnpm, Vite, TypeScript"
       text: "One build order: islands first, then Hugo. Nothing esoteric."
-      href: "/about/"
+      href: "/en/about/"
 
 zh:
   items:

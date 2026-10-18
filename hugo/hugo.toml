@@ -1,16 +1,17 @@
 # Site configuration — Hugo owns all content, routing and static HTML.
 # React islands are mounted only on elements Hugo marks with data-island.
 #
-# The site is bilingual: English is the default language at `/`, Chinese lives
-# under `/zh/`. Translations are sibling files with a `.zh.md` suffix, so a
-# missing translation is obvious in the content tree.
+# The site is bilingual: both languages live in peer subpaths, `/en/` and
+# `/zh/`. The repo-root `/` is a tiny static redirect (hugo/static/index.html).
+# Translations are sibling files with a `.zh.md` suffix, so a missing
+# translation is obvious in the content tree.
 
 baseURL = "https://xaoq23.github.io/"
 title = "xaoq23"
 theme = "blowfish"
 
-defaultContentLanguage = "en"
-defaultContentLanguageInSubdir = false
+defaultContentLanguage = "zh"
+defaultContentLanguageInSubdir = true
 enableRobotsTXT = true
 enableEmoji = true
 summaryLength = 0
@@ -98,7 +99,7 @@ summaryLength = 0
 [languages]
 
   [languages.en]
-    languageName = "English"
+    label = "English"
     languageCode = "en-US"
     locale = "en-US"
     contentDir = "content"
@@ -109,15 +110,15 @@ summaryLength = 0
       displayName = "EN"
       isoCode = "en-US"
       dateFormat = "2 January 2006"
-      description = "Notes on programming, tooling and building things on the web."
+      description = "A personal blog recording baffling thoughts."
 
       [languages.en.params.hero]
         eyebrow = "Notes"
-        title = "Software, systems, and the occasional yak shave."
-        lede = "A working notebook on programming, tooling and building things on the web. Static by default, interactive only where it earns its keep."
+        title = "Global Coding Skills Dropped 10,000× — Only I Stayed the Same?!"
+        lede = "A personal blog recording baffling thoughts."
 
       [languages.en.params.author]
-        headline = "Software, systems, and the occasional yak shave."
+        headline = "Global Coding Skills Dropped 10,000× — Only I Stayed the Same?!"
         bio = "Notes on programming, tooling and building things on the web."
 
     [[languages.en.menus.main]]
@@ -131,7 +132,7 @@ summaryLength = 0
       weight = 20
 
   [languages.zh]
-    languageName = "中文"
+    label = "中文"
     languageCode = "zh-CN"
     locale = "zh-CN"
     contentDir = "content"
@@ -142,16 +143,16 @@ summaryLength = 0
       displayName = "中文"
       isoCode = "zh-CN"
       dateFormat = "2006年1月2日"
-      description = "关于编程、工具与 Web 构建的中文笔记。"
+      description = "个人blog网站，记录莫名其妙的思考。"
 
       [languages.zh.params.hero]
         eyebrow = "笔记"
-        title = "软件、系统，与偶尔的折腾。"
-        lede = "一个关于编程、工具和 Web 构建的工作笔记。默认静态，只在真正值得的地方加一点交互。"
+        title = "全球编程能力下降一万倍，只有我保持不变？！"
+        lede = "个人blog网站记录莫名其妙的思考"
 
       [languages.zh.params.author]
-        headline = "软件、系统，与偶尔的折腾。"
-        bio = "关于编程、工具与在 Web 上构建事物的中文笔记。"
+        headline = "全球编程能力下降一万倍，只有我保持不变？！"
+        bio = "记录编程、工具与 Web 构建中那些莫名其妙的思考。"
 
     [[languages.zh.menus.main]]
       name = "文章"

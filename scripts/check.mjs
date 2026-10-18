@@ -141,11 +141,11 @@ heading("▸ translation coverage");
 
 const contentDir = join(root, "hugo", "content");
 if (existsSync(contentDir)) {
-  const englishPages = walk(contentDir).filter(
-    (file) => file.endsWith(".md") && !file.endsWith(".zh.md"),
-  );
+  // English pages are explicit `.en.md`; Chinese is the default language, so
+  // its files are explicit `.zh.md` as well. Pair them by base name.
+  const englishPages = walk(contentDir).filter((file) => file.endsWith(".en.md"));
   const untranslated = englishPages.filter(
-    (file) => !existsSync(file.replace(/\.md$/, ".zh.md")),
+    (file) => !existsSync(file.replace(/\.en\.md$/, ".zh.md")),
   );
   if (untranslated.length > 0) {
     console.warn(`  ${untranslated.length} page(s) without a Chinese translation:`);
@@ -168,13 +168,22 @@ function gzippedSize(file) {
 }
 
 function homepageIslandScripts() {
-  const indexPath = join(publicDir, "index.html");
-  if (!existsSync(indexPath)) return [];
-  const html = readFileSync(indexPath, "utf8");
-  const scripts = [...html.matchAll(/<script[^>]+src="?([^"\s>]*\/islands\/[^"\s>]+)"?[^>]*>/gi)].map(
-    (match) => match[1],
-  );
-  return [...new Set(scripts)].map((url) => join(publicDir, decodeURIComponent(url).replace(/^\//, "")));
+  // Both languages are homepages now (`/en/`, `/zh/`); the site root is a
+  // redirect. Measure the union of the scripts those pages load.
+  const homes = [
+    join(publicDir, "en", "index.html"),
+    join(publicDir, "zh", "index.html"),
+    join(publicDir, "index.html"),
+  ].filter((file) => existsSync(file));
+
+  const urls = new Set();
+  for (const home of homes) {
+    const html = readFileSync(home, "utf8");
+    for (const match of html.matchAll(/<script[^>]+src="?([^"\s>]*\/islands\/[^"\s>]+)"?[^>]*>/gi)) {
+      urls.add(match[1]);
+    }
+  }
+  return [...urls].map((url) => join(publicDir, decodeURIComponent(url).replace(/^\//, "")));
 }
 
 const islandScripts = homepageIslandScripts();

@@ -29,6 +29,8 @@
   --text-xl: calc(var(--text-lg) * var(--text-scale));
   --text-2xl: calc(var(--text-xl) * var(--text-scale));
   --text-3xl: calc(var(--text-2xl) * var(--text-scale));
+  /* Hero headings are long by design; scale fluidly and cap at --text-3xl. */
+  --text-hero: clamp(2rem, 1.2rem + 3.2vw, var(--text-3xl));
 
   --leading-body: 1.75;
   --leading-snug: 1.4;
