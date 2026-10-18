@@ -15,6 +15,7 @@ hugo/public/
 hugo/resources/
 hugo/.hugo_build.lock
 hugo/static/islands/
+hugo/content-en/
 islands/dist/
 
 # Logs and OS noise

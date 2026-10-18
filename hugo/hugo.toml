@@ -2,9 +2,12 @@
 # React islands are mounted only on elements Hugo marks with data-island.
 #
 # The site is bilingual: both languages live in peer subpaths, `/en/` and
-# `/zh/`. The repo-root `/` is a tiny static redirect (hugo/static/index.html).
-# Translations are sibling files with a `.zh.md` suffix, so a missing
-# translation is obvious in the content tree.
+# `/zh/`. Chinese is the default language, so Hugo's automatic root redirect
+# sends `/` to `/zh/`.
+#
+# Articles are written ONCE in `hugo/content/`. The English site renders the
+# same Markdown through a generated mirror (`hugo/content-en/`, produced by
+# scripts/lib/sync-content.mjs). Only the site chrome is localized.
 
 baseURL = "https://xaoq23.github.io/"
 title = "xaoq23"
@@ -95,15 +98,62 @@ summaryLength = 0
 
 # ---------------------------------------------------------------------------
 # Languages
+#
+# Articles are written ONCE, in `hugo/content/`. The English site renders the
+# same Markdown through a generated mirror (`hugo/content-en/`), so authors
+# never write two versions of a post. Only the site chrome (title, menus,
+# descriptions, hero copy, UI strings) is localized.
+#
+# `hugo/content-en/` is build output created by scripts/lib/sync-content.mjs:
+# edit `hugo/content/`, never the mirror. The mirror also injects a
+# `translationKey` so Hugo links the two language versions (switcher, hreflang,
+# sitemap alternates).
 # ---------------------------------------------------------------------------
 [languages]
 
-  [languages.en]
-    label = "English"
-    languageCode = "en-US"
-    locale = "en-US"
+  [languages.zh]
+    label = "中文"
+    locale = "zh-CN"
+    hasCJKLanguage = true
     contentDir = "content"
     weight = 1
+    title = "xaoq23 · 笔记"
+
+    # Articles are authored in Chinese, so article metadata is declared once
+    # here instead of being repeated for every post.
+    description = "个人blog网站，记录莫名其妙的思考。"
+
+    [languages.zh.params]
+      displayName = "中文"
+      isoCode = "zh-CN"
+      dateFormat = "2006年1月2日"
+      description = "个人blog网站，记录莫名其妙的思考。"
+
+      [languages.zh.params.hero]
+        eyebrow = "笔记"
+        title = "全球编程能力下降一万倍，只有我保持不变？！"
+        lede = "个人blog网站记录莫名其妙的思考"
+
+      [languages.zh.params.author]
+        headline = "全球编程能力下降一万倍，只有我保持不变？！"
+        bio = "记录编程、工具与 Web 构建中那些莫名其妙的思考。"
+
+    [[languages.zh.menus.main]]
+      name = "文章"
+      pageRef = "posts"
+      weight = 10
+
+    [[languages.zh.menus.main]]
+      name = "关于"
+      pageRef = "about"
+      weight = 20
+
+  [languages.en]
+    label = "English"
+    locale = "en-US"
+    hasCJKLanguage = false
+    contentDir = "content-en"
+    weight = 2
     title = "xaoq23"
 
     [languages.en.params]
@@ -128,38 +178,5 @@ summaryLength = 0
 
     [[languages.en.menus.main]]
       name = "About"
-      pageRef = "about"
-      weight = 20
-
-  [languages.zh]
-    label = "中文"
-    languageCode = "zh-CN"
-    locale = "zh-CN"
-    contentDir = "content"
-    weight = 2
-    title = "xaoq23 · 笔记"
-
-    [languages.zh.params]
-      displayName = "中文"
-      isoCode = "zh-CN"
-      dateFormat = "2006年1月2日"
-      description = "个人blog网站，记录莫名其妙的思考。"
-
-      [languages.zh.params.hero]
-        eyebrow = "笔记"
-        title = "全球编程能力下降一万倍，只有我保持不变？！"
-        lede = "个人blog网站记录莫名其妙的思考"
-
-      [languages.zh.params.author]
-        headline = "全球编程能力下降一万倍，只有我保持不变？！"
-        bio = "记录编程、工具与 Web 构建中那些莫名其妙的思考。"
-
-    [[languages.zh.menus.main]]
-      name = "文章"
-      pageRef = "posts"
-      weight = 10
-
-    [[languages.zh.menus.main]]
-      name = "关于"
       pageRef = "about"
       weight = 20

@@ -5,7 +5,7 @@
   "packageManager": "pnpm@12.4.2",
   "description": "Personal blog: Hugo for pages, React islands for isolated widgets.",
   "scripts": {
-    "dev:hugo": "node scripts/hugo.mjs server -D --source hugo",
+    "dev:hugo": "node scripts/dev-hugo.mjs",
     "dev:islands": "node scripts/islands.mjs dev",
     "build": "node scripts/islands.mjs build && node scripts/hugo.mjs --minify --cleanDestinationDir --source hugo",
     "build:islands": "node scripts/islands.mjs build",

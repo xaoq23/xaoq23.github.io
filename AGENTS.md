@@ -8,10 +8,10 @@ surface the conflict instead of silently breaking the architecture.
 
 Production URL: <https://xaoq23.github.io/> (user site, no subpath).
 
-The site is **bilingual**: Chinese is the default language at `/zh/`, English
-is served from `/en/`. They are peers; Hugo's default-language redirect sends
-the repo root `/` to `/zh/`. Both languages are first-class — a page without a
-Chinese translation is an unfinished page.
+The site is **bilingual in its chrome**: Chinese is the default language at
+`/zh/`, English is served from `/en/`. They are peers; Hugo's default-language
+redirect sends the repo root `/` to `/zh/`. Articles are written once and
+rendered by both languages — there is no per-article translation work.
 
 ---
 
@@ -58,10 +58,11 @@ instead of adding an island.
   language owns the root: `defaultContentLanguageInSubdir = true`, and Hugo
   emits the `/` → `/zh/` redirect automatically. Do not add a hand-written
   root page or move a language back to the root.
-- **Content.** Translations are sibling files with explicit language suffixes:
-  `about.en.md` / `about.zh.md`. A missing `.zh.md` is a coverage gap that
-  `pnpm check` reports. Do not add unsuffixed content files — they would
-  silently become Chinese-only.
+- **Content.** Articles are written **once**, in `hugo/content/`, in whatever
+  language they are authored in. `scripts/lib/sync-content.mjs` mirrors that
+  tree into `hugo/content-en/` before every Hugo run, and Hugo pairs the two
+  trees by relative path. Never create `.en.md`/`.zh.md` pairs and never edit
+  `hugo/content-en/` (it is generated and gitignored).
 - **UI copy.** Never hardcode user-facing strings in templates. Add the key to
   both `hugo/i18n/en-US.yaml` and `hugo/i18n/zh-CN.yaml` and call `i18n`.
   **Filenames follow `languageCode`, not the language key** — Hugo resolves
@@ -77,9 +78,9 @@ instead of adding an island.
 - **Links.** Use `relLangURL` for internal links so both languages keep their
   prefixes. Never hardcode `/en/` or `/zh/` in templates; data files may use
   absolute paths because they are language-keyed content.
-- **Discovery.** The header language switcher and `hreflang` alternates are
-  produced by Blowfish/Hugo; they appear only when a page has a translation,
-  which is another reason every page needs one.
+- **Discovery.** The header language switcher and `hreflang` alternates work
+  because both content trees contain the same relative paths; Hugo pairs them
+  automatically. Do not break that by renaming files in only one tree.
 
 ---
 
@@ -88,7 +89,8 @@ instead of adding an island.
 ```
 .
 ├── hugo/
-│   ├── content/                 # Markdown (.en.md / .zh.md language siblings)
+│   ├── content/                 # articles, authored once (no language suffix)
+│   ├── content-en/              # generated mirror — never edit or commit
 │   ├── i18n/                    # en-US.yaml / zh-CN.yaml (UI copy)
 │   ├── layouts/                 # project templates; overrides theme layouts
 │   │   ├── _default/            # baseof, single, list
@@ -109,7 +111,8 @@ instead of adding an island.
 │   ├── tsconfig.json
 │   ├── pnpm-workspace.yaml      # pnpm settings; Windows workarounds, see §11
 │   └── package.json
-├── scripts/                     # hugo.mjs / islands.mjs / check.mjs wrappers
+├── scripts/                     # hugo/dev-hugo/islands/check wrappers
+│   └── lib/sync-content.mjs     # content/ -> content-en/ mirror
 ├── assert/img.png               # source image for the site icons
 ├── .github/workflows/deploy.yml
 ├── package.json
@@ -151,8 +154,9 @@ pnpm check
 ```
 
 `pnpm check` runs, in order: `tsc --noEmit`, the Vite island build, the Hugo
-build, a link check over `hugo/public/`, translation coverage, and an island
-payload report. CI runs the same command, so green locally means green deploy.
+build (which mirrors `content/` first), a link check over `hugo/public/`, a
+content-mirror sanity check, and an island payload report. CI runs the same
+command, so green locally means green deploy.
 
 `make check` / `make build` / `make dev` are thin wrappers around the pnpm
 scripts; pnpm is the source of truth.
@@ -240,17 +244,18 @@ in this list.
 
 ## 7. Content conventions
 
-- Posts: `hugo/content/posts/YYYY/MM/slug.en.md` and `slug.zh.md`.
-- Every page gets both language files: `slug.en.md` / `slug.zh.md` (same
-  directory, same base name). Section indexes follow the same rule
-  (`_index.en.md` / `_index.zh.md`).
+- Posts: `hugo/content/posts/YYYY/MM/slug.md` — **one file per article**, in
+  whichever language it is written. Never add `.en.md`/`.zh.md` copies.
+- Section indexes are `_index.md` in the same way; the English mirror is
+  generated automatically.
 - Front matter (YAML): `title`, `date`, `lastmod`, `tags`, `categories`,
-  `summary`, `draft`, optional `cover`. Translate the title and summary; tags
-  and categories may be localized too.
+  `summary`, `draft`, optional `cover`. The same title/summary is shown by both
+  language sites, so write them for the article, not for a locale.
 - Every post needs a `summary`; it feeds listing pages and search.
 - Interactive shortcodes are used sparingly, at most 2 per article.
-- Image assets go under `hugo/content/posts/.../<slug>/` as page bundles.
-- Never hand-edit `hugo/public/` or any generated file.
+- Image assets go under `hugo/content/posts/.../<slug>/` as page bundles; the
+  mirror copies them too.
+- Never hand-edit `hugo/public/`, `hugo/content-en/`, or any generated file.
 
 ---
 
@@ -277,8 +282,8 @@ A change is complete only when all of the following hold:
 
 - [ ] `pnpm check` passes locally.
 - [ ] `hugo --minify` produces zero warnings for both languages.
-- [ ] Translation coverage is clean: every English page has a `.zh.md`
-      sibling, and every new UI string exists in both i18n files.
+- [ ] Content mirror is clean: authored and mirrored file counts match, and
+      every new UI string exists in both i18n files.
 - [ ] `tsc --noEmit` is clean; no `any` added without a comment justifying it.
 - [ ] No React code path reaches nav, footer, or article prose.
 - [ ] Total island JS shipped on the homepage is under **72 KB gzipped**
@@ -296,7 +301,7 @@ A change is complete only when all of the following hold:
 - Do not introduce SSR, a meta-framework, or a client-side router.
 - Do not add a runtime CSS-in-JS library.
 - Do not commit `node_modules/`, `public/`, `.hugo_build.lock`, `.tools/`,
-  `.cache/`, or `hugo/static/islands/`.
+  `.cache/`, `hugo/static/islands/`, or `hugo/content-en/`.
 - Do not hardcode colors, font sizes, or spacing outside `tokens.css`.
 - Site icons derive from `assert/img.png` via `scripts/make-favicons.py`
   (Pillow). Never hand-edit the generated PNG/ICO files in `hugo/static/`;
@@ -327,11 +332,12 @@ A change is complete only when all of the following hold:
 Implemented: vendored theme + project overrides, token-driven CSS, custom
 homepage with the 「全球编程能力下降一万倍，只有我保持不变？！」 hero, editorial post
 list, pagination, bento island with Hugo fallback and manifest-driven script
-injection, bilingual content as peer subpaths (English at `/en/`, Chinese at
-`/zh/`, root redirect to `/zh/`), localized dates and bento data, language
-switcher + hreflang, bilingual root 404, email (`2105002580@qq.com`) in the
-homepage hero, the about pages and Blowfish's author block, link checking,
-translation coverage reporting, deploy workflow.
+injection, bilingual chrome as peer subpaths (English at `/en/`, Chinese at
+`/zh/`, root redirect to `/zh/`) with single-source articles mirrored into
+`hugo/content-en/`, localized dates and bento data, language switcher +
+hreflang, bilingual root 404, email (`2105002580@qq.com`) in the homepage hero,
+the about pages and Blowfish's author block, link checking, content-mirror
+reporting, deploy workflow.
 
 Not implemented yet: `search`, `post-filter`, shortcode widgets, automated
 Lighthouse checks. Tag/category pages currently use the theme's own term

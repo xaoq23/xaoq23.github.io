@@ -145,24 +145,24 @@ if (!existsSync(publicDir)) {
 // ---------------------------------------------------------------------------
 // 5. Translation coverage
 // ---------------------------------------------------------------------------
-heading("▸ translation coverage");
+heading("▸ content mirror");
 
 const contentDir = join(root, "hugo", "content");
+const mirrorDir = join(root, "hugo", "content-en");
 if (existsSync(contentDir)) {
-  // English pages are explicit `.en.md`; Chinese is the default language, so
-  // its files are explicit `.zh.md` as well. Pair them by base name.
-  const englishPages = walk(contentDir).filter((file) => file.endsWith(".en.md"));
-  const untranslated = englishPages.filter(
-    (file) => !existsSync(file.replace(/\.en\.md$/, ".zh.md")),
-  );
-  if (untranslated.length > 0) {
-    console.warn(`  ${untranslated.length} page(s) without a Chinese translation:`);
-    for (const file of untranslated.slice(0, 10)) {
-      console.warn(`    ${file.slice(contentDir.length + 1)}`);
-    }
-    if (untranslated.length > 10) console.warn(`    ... and ${untranslated.length - 10} more`);
+  // Articles are authored once and mirrored into the English content tree by
+  // scripts/lib/sync-content.mjs (run before every Hugo build). The counts must
+  // match; a mismatch means the mirror is stale or the sync failed.
+  const authored = walk(contentDir).filter((file) => file.endsWith(".md")).length;
+  const mirrored = existsSync(mirrorDir)
+    ? walk(mirrorDir).filter((file) => file.endsWith(".md")).length
+    : 0;
+  if (authored !== mirrored) {
+    failures.push("content mirror");
+    console.error(`  mismatch: ${authored} authored file(s), ${mirrored} mirrored file(s)`);
+    console.error("  run: node scripts/lib/sync-content.mjs");
   } else {
-    console.log(`  ok (${englishPages.length} English pages, all with .zh.md siblings)`);
+    console.log(`  ok (${authored} article file(s) shared by both languages)`);
   }
 }
 
