@@ -9,6 +9,9 @@
  *   5. island budget     (reports gzipped homepage island JS)
  *
  * Build order matters: Hugo reads the Vite manifest to emit hashed script tags.
+ *
+ * `SITE_OUT_DIR=.cache/verify pnpm check` writes the site elsewhere, which is
+ * useful while `pnpm dev:hugo` is running (it also renders into hugo/public).
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
@@ -16,7 +19,11 @@ import { dirname, extname, join, resolve } from "node:path";
 import { gzipSync } from "node:zlib";
 
 const root = resolve(import.meta.dirname, "..");
-const publicDir = join(root, "hugo", "public");
+const outDirOverride = process.env.SITE_OUT_DIR
+  ? resolve(root, process.env.SITE_OUT_DIR)
+  : null;
+const publicDir = outDirOverride ?? join(root, "hugo", "public");
+const destinationArgs = outDirOverride ? ["--destination", publicDir] : [];
 const BUDGET_BYTES = 72 * 1024;
 
 const failures = [];
@@ -66,6 +73,7 @@ const islandsOk = step("islands build (vite)", join(root, "scripts", "islands.mj
 const hugoOk = step("hugo build (--minify)", join(root, "scripts", "hugo.mjs"), [
   "--minify",
   "--cleanDestinationDir",
+  ...destinationArgs,
   "--source",
   "hugo",
   "--logLevel",

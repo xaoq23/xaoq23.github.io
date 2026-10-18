@@ -110,6 +110,7 @@ instead of adding an island.
 │   ├── pnpm-workspace.yaml      # pnpm settings; Windows workarounds, see §11
 │   └── package.json
 ├── scripts/                     # hugo.mjs / islands.mjs / check.mjs wrappers
+├── assert/img.png               # source image for the site icons
 ├── .github/workflows/deploy.yml
 ├── package.json
 └── AGENTS.md
@@ -297,6 +298,9 @@ A change is complete only when all of the following hold:
 - Do not commit `node_modules/`, `public/`, `.hugo_build.lock`, `.tools/`,
   `.cache/`, or `hugo/static/islands/`.
 - Do not hardcode colors, font sizes, or spacing outside `tokens.css`.
+- Site icons derive from `assert/img.png` via `scripts/make-favicons.py`
+  (Pillow). Never hand-edit the generated PNG/ICO files in `hugo/static/`;
+  replace the source image and regenerate.
 - Do not rewrite Hugo-rendered content in React "for consistency".
 - Do not upgrade Hugo, React, or Vite major versions as part of an unrelated
   task.

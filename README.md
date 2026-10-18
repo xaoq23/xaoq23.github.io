@@ -92,6 +92,21 @@ islands/
 scripts/                hugo/islands/check CLI wrappers
 ```
 
+## Site icon
+
+The favicon is generated from `assert/img.png` (the source image is committed).
+To change it, replace that file and run:
+
+```bash
+python scripts/make-favicons.py
+```
+
+This writes `favicon.ico` (16/32/48), `favicon-16x16.png`, `favicon-32x32.png`,
+`apple-touch-icon.png` (180), `android-chrome-192x192.png` and
+`android-chrome-512x512.png` into `hugo/static/` (project static overrides the
+theme's defaults). `hugo/layouts/partials/favicons.html` links them, and
+`hugo/static/site.webmanifest` describes the PWA icons. Requires Pillow.
+
 ## How an island is wired
 
 1. Hugo renders a container marked `data-island="<name>"`, including fallback
