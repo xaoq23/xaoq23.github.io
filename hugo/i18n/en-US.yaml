@@ -1,0 +1,22 @@
+home:
+  eyebrow: "Notes"
+  posts_link: "Read the posts"
+  about_link: "About"
+  email_aria: "Email xaoq23"
+  latest: "Latest writing"
+  all_posts: "All posts"
+
+bento:
+  heading: "Currently"
+  link: "Read more"
+  threads:
+    one: "{{ .Count }} thread"
+    other: "{{ .Count }} threads"
+
+pagination:
+  newer: "Newer"
+  older: "Older"
+  status: "Page {{ .Page }} of {{ .Total }}"
+
+list:
+  tags_label: "Tags"

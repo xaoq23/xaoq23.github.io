@@ -10,6 +10,10 @@ software easier to live with.
 This site is deliberately simple: Hugo renders every page as static HTML,
 and React is only used for the few widgets that genuinely need state.
 
+## Contact
+
+Email: [2105002580@qq.com](mailto:2105002580@qq.com)
+
 ## Colophon
 
 - Static site generator: Hugo (extended)

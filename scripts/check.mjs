@@ -135,7 +135,31 @@ if (!existsSync(publicDir)) {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Island payload report
+// 5. Translation coverage
+// ---------------------------------------------------------------------------
+heading("▸ translation coverage");
+
+const contentDir = join(root, "hugo", "content");
+if (existsSync(contentDir)) {
+  const englishPages = walk(contentDir).filter(
+    (file) => file.endsWith(".md") && !file.endsWith(".zh.md"),
+  );
+  const untranslated = englishPages.filter(
+    (file) => !existsSync(file.replace(/\.md$/, ".zh.md")),
+  );
+  if (untranslated.length > 0) {
+    console.warn(`  ${untranslated.length} page(s) without a Chinese translation:`);
+    for (const file of untranslated.slice(0, 10)) {
+      console.warn(`    ${file.slice(contentDir.length + 1)}`);
+    }
+    if (untranslated.length > 10) console.warn(`    ... and ${untranslated.length - 10} more`);
+  } else {
+    console.log(`  ok (${englishPages.length} English pages, all with .zh.md siblings)`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Island payload report
 // ---------------------------------------------------------------------------
 heading("▸ island payload");
 

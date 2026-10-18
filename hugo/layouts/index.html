@@ -1,12 +1,19 @@
 {{ define "main" }}
+  {{ $dateFormat := site.Params.dateFormat | default "2006-01-02" }}
+  {{ $email := site.Params.author.email }}
   <div class="home">
     <section class="home-hero" aria-labelledby="home-title">
-      <p class="home-eyebrow">{{ site.Params.hero.eyebrow | default "Notes" }}</p>
+      <p class="home-eyebrow">{{ site.Params.hero.eyebrow | default (i18n "home.eyebrow") }}</p>
       <h1 id="home-title" class="home-title">{{ site.Params.hero.title | default site.Title }}</h1>
       <p class="home-lede">{{ site.Params.hero.lede | default site.Params.author.bio }}</p>
       <ul class="home-links">
-        <li><a href="{{ "posts/" | relURL }}">Read the posts</a></li>
-        <li><a href="{{ "about/" | relURL }}">About</a></li>
+        <li><a href="{{ "posts/" | relLangURL }}">{{ i18n "home.posts_link" }}</a></li>
+        <li><a href="{{ "about/" | relLangURL }}">{{ i18n "home.about_link" }}</a></li>
+        {{ with $email }}
+          <li>
+            <a href="mailto:{{ . }}" aria-label="{{ i18n "home.email_aria" }}">{{ . }}</a>
+          </li>
+        {{ end }}
         <li><a href="https://github.com/xaoq23">GitHub</a></li>
       </ul>
     </section>
@@ -18,14 +25,14 @@
     {{ with $latest }}
       <section class="home-section" aria-labelledby="latest-posts">
         <div class="section-head">
-          <h2 class="section-heading" id="latest-posts">Latest writing</h2>
-          <a class="section-link" href="{{ "posts/" | relURL }}">All posts &rarr;</a>
+          <h2 class="section-heading" id="latest-posts">{{ i18n "home.latest" }}</h2>
+          <a class="section-link" href="{{ "posts/" | relLangURL }}">{{ i18n "home.all_posts" }} &rarr;</a>
         </div>
         <ul class="post-list">
           {{ range . }}
             <li class="post-item">
               <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">
-                {{- .Date.Format "2006-01-02" -}}
+                {{- .Date.Format $dateFormat -}}
               </time>
               <div>
                 <h3 class="post-item-title">

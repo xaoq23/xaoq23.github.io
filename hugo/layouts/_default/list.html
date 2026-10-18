@@ -1,4 +1,5 @@
 {{ define "main" }}
+  {{ $dateFormat := site.Params.dateFormat | default "2006-01-02" }}
   <div class="list-header">
     <h1 class="list-title">{{ .Title }}</h1>
     {{ with .Description }}<p class="list-description">{{ . }}</p>{{ end }}
@@ -9,7 +10,7 @@
     {{ range $paginator.Pages }}
       <li class="post-item">
         <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">
-          {{- .Date.Format "2006-01-02" -}}
+          {{- .Date.Format $dateFormat -}}
         </time>
         <div>
           <h2 class="post-item-title">
@@ -17,7 +18,7 @@
           </h2>
           <p class="post-summary">{{ .Summary | plainify | truncate 200 }}</p>
           {{ with .Params.tags }}
-            <ul class="post-meta" aria-label="Tags">
+            <ul class="post-meta" aria-label="{{ i18n "list.tags_label" }}">
               {{ range . }}<li><span class="tag">{{ . }}</span></li>{{ end }}
             </ul>
           {{ end }}

@@ -1,17 +1,17 @@
 {{/* Minimal editorial pagination. Hugo no longer ships _internal/pagination.html. */}}
 {{ $p := .Paginator }}
 {{ if gt $p.TotalPages 1 }}
-  <nav class="pagination" aria-label="Pagination">
+  <nav class="pagination" aria-label="{{ i18n "pagination.newer" }} / {{ i18n "pagination.older" }}">
     {{ with $p.Prev }}
-      <a class="pagination-link" href="{{ .URL }}" rel="prev">&larr; Newer</a>
+      <a class="pagination-link" href="{{ .URL }}" rel="prev">&larr; {{ i18n "pagination.newer" }}</a>
     {{ else }}
-      <span class="pagination-link is-disabled" aria-hidden="true">&larr; Newer</span>
+      <span class="pagination-link is-disabled" aria-hidden="true">&larr; {{ i18n "pagination.newer" }}</span>
     {{ end }}
-    <span class="pagination-status">Page {{ $p.PageNumber }} of {{ $p.TotalPages }}</span>
+    <span class="pagination-status">{{ i18n "pagination.status" (dict "Page" $p.PageNumber "Total" $p.TotalPages) }}</span>
     {{ with $p.Next }}
-      <a class="pagination-link" href="{{ .URL }}" rel="next">Older &rarr;</a>
+      <a class="pagination-link" href="{{ .URL }}" rel="next">{{ i18n "pagination.older" }} &rarr;</a>
     {{ else }}
-      <span class="pagination-link is-disabled" aria-hidden="true">Older &rarr;</span>
+      <span class="pagination-link is-disabled" aria-hidden="true">{{ i18n "pagination.older" }} &rarr;</span>
     {{ end }}
   </nav>
 {{ end }}

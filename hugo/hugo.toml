@@ -1,12 +1,16 @@
 # Site configuration — Hugo owns all content, routing and static HTML.
 # React islands are mounted only on elements Hugo marks with data-island.
+#
+# The site is bilingual: English is the default language at `/`, Chinese lives
+# under `/zh/`. Translations are sibling files with a `.zh.md` suffix, so a
+# missing translation is obvious in the content tree.
 
 baseURL = "https://xaoq23.github.io/"
 title = "xaoq23"
 theme = "blowfish"
 
 defaultContentLanguage = "en"
-locale = "en-US"
+defaultContentLanguageInSubdir = false
 enableRobotsTXT = true
 enableEmoji = true
 summaryLength = 0
@@ -38,6 +42,9 @@ summaryLength = 0
     startLevel = 2
     endLevel = 3
 
+# ---------------------------------------------------------------------------
+# Shared parameters (apply to every language)
+# ---------------------------------------------------------------------------
 [params]
   colorScheme = "blowfish"
   defaultAppearance = "light"
@@ -60,7 +67,7 @@ summaryLength = 0
 
   [params.article]
     showDate = true
-    showAuthor = false
+    showAuthor = true
     showReadingTime = true
     showWordCount = false
     showBreadcrumbs = false
@@ -73,25 +80,85 @@ summaryLength = 0
   [params.list]
     showHero = false
 
-  [params.hero]
-    eyebrow = "Notes"
-    title = "Software, systems, and the occasional yak shave."
-    lede = "A working notebook on programming, tooling and building things on the web. Static by default, interactive only where it earns its keep."
-
+  # Personal information. `email` is rendered by the homepage, the about page
+  # and Blowfish's author block (via the email entry in `links`).
   [params.author]
     name = "xaoq23"
-    headline = "Software, systems, and the occasional yak shave."
-    bio = "Notes on programming, tooling and building things on the web."
+    email = "2105002580@qq.com"
     links = [
+      # `mailto:` prefix matters: Blowfish skips mailto links when emitting
+      # <link rel="me">, and its email.js handles both forms.
+      { email = "mailto:2105002580@qq.com" },
       { github = "https://github.com/xaoq23" },
     ]
 
-[[menus.main]]
-  name = "Posts"
-  pageRef = "posts"
-  weight = 10
+# ---------------------------------------------------------------------------
+# Languages
+# ---------------------------------------------------------------------------
+[languages]
 
-[[menus.main]]
-  name = "About"
-  pageRef = "about"
-  weight = 20
+  [languages.en]
+    languageName = "English"
+    languageCode = "en-US"
+    locale = "en-US"
+    contentDir = "content"
+    weight = 1
+    title = "xaoq23"
+
+    [languages.en.params]
+      displayName = "EN"
+      isoCode = "en-US"
+      dateFormat = "2 January 2006"
+      description = "Notes on programming, tooling and building things on the web."
+
+      [languages.en.params.hero]
+        eyebrow = "Notes"
+        title = "Software, systems, and the occasional yak shave."
+        lede = "A working notebook on programming, tooling and building things on the web. Static by default, interactive only where it earns its keep."
+
+      [languages.en.params.author]
+        headline = "Software, systems, and the occasional yak shave."
+        bio = "Notes on programming, tooling and building things on the web."
+
+    [[languages.en.menus.main]]
+      name = "Posts"
+      pageRef = "posts"
+      weight = 10
+
+    [[languages.en.menus.main]]
+      name = "About"
+      pageRef = "about"
+      weight = 20
+
+  [languages.zh]
+    languageName = "中文"
+    languageCode = "zh-CN"
+    locale = "zh-CN"
+    contentDir = "content"
+    weight = 2
+    title = "xaoq23 · 笔记"
+
+    [languages.zh.params]
+      displayName = "中文"
+      isoCode = "zh-CN"
+      dateFormat = "2006年1月2日"
+      description = "关于编程、工具与 Web 构建的中文笔记。"
+
+      [languages.zh.params.hero]
+        eyebrow = "笔记"
+        title = "软件、系统，与偶尔的折腾。"
+        lede = "一个关于编程、工具和 Web 构建的工作笔记。默认静态，只在真正值得的地方加一点交互。"
+
+      [languages.zh.params.author]
+        headline = "软件、系统，与偶尔的折腾。"
+        bio = "关于编程、工具与在 Web 上构建事物的中文笔记。"
+
+    [[languages.zh.menus.main]]
+      name = "文章"
+      pageRef = "posts"
+      weight = 10
+
+    [[languages.zh.menus.main]]
+      name = "关于"
+      pageRef = "about"
+      weight = 20

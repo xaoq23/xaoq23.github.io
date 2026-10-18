@@ -1,0 +1,22 @@
+home:
+  eyebrow: "笔记"
+  posts_link: "阅读文章"
+  about_link: "关于"
+  email_aria: "给 xaoq23 发邮件"
+  latest: "最新文章"
+  all_posts: "全部文章"
+
+bento:
+  heading: "近况"
+  link: "了解更多"
+  threads:
+    one: "{{ .Count }} 条线索"
+    other: "{{ .Count }} 条线索"
+
+pagination:
+  newer: "较新"
+  older: "较早"
+  status: "第 {{ .Page }} / {{ .Total }} 页"
+
+list:
+  tags_label: "标签"
