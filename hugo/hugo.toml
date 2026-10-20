@@ -149,6 +149,11 @@ summaryLength = 0
       weight = 10
 
     [[languages.zh.menus.main]]
+      name = "AI日报"
+      pageRef = "ai-daily"
+      weight = 15
+
+    [[languages.zh.menus.main]]
       name = "关于"
       pageRef = "about"
       weight = 20
@@ -185,6 +190,11 @@ summaryLength = 0
       name = "Posts"
       pageRef = "posts"
       weight = 10
+
+    [[languages.en.menus.main]]
+      name = "AI Daily"
+      pageRef = "ai-daily"
+      weight = 15
 
     [[languages.en.menus.main]]
       name = "About"

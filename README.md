@@ -66,12 +66,37 @@ would otherwise inspect development HTML and can race with the server. Or run
   bilingual fallback; Hugo still emits per-language 404s under `/en/` and
   `/zh/`.
 
+## Daily AI digest
+
+`.github/workflows/daily-ai.yml` runs every day at **00:00 UTC (08:00
+Asia/Shanghai)**:
+
+1. installs `scripts/requirements.txt` (feedparser) and runs
+   `scripts/ai_daily.py`;
+2. the script fetches five AI feeds and writes
+   `hugo/content/ai-daily/YYYY-MM-DD.md` (an existing file is left untouched);
+3. the job commits the new post with the `github-actions[bot]` identity and
+   then builds and deploys the site **in the same workflow**. GitHub does not
+   start other workflows for commits pushed with `GITHUB_TOKEN`, so the digest
+   workflow deploys itself instead of relying on the push event.
+
+Manual run: trigger **Daily AI digest** from the Actions tab, or locally:
+
+```bash
+pip install -r scripts/requirements.txt
+python scripts/ai_daily.py --date 2026-10-20 --force
+```
+
+Feeds live in the `FEEDS` list at the top of `scripts/ai_daily.py`; the script
+also skips links that appeared in the previous days' digests.
+
 ## Layout
 
 ```
 hugo/
   hugo.toml             languages, per-language params, menus, shared params
   content/              the articles — written once, in whatever language
+  content/ai-daily/     generated daily AI digest (one Markdown per day)
   content-en/           generated mirror of content/ (never edit or commit)
   i18n/                 en-US.yaml / zh-CN.yaml — our UI strings
   layouts/              project templates that override/extend the theme
@@ -84,6 +109,8 @@ scripts/
   hugo.mjs              Hugo wrapper (syncs content, pins caches, runs Hugo)
   dev-hugo.mjs          dev server + content mirror watcher
   lib/sync-content.mjs  content/ -> content-en/ mirror
+  ai_daily.py           RSS crawler that generates content/ai-daily/*.md
+  requirements.txt      crawler dependencies (feedparser)
   check.mjs             full verification
 ```
 
