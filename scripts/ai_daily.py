@@ -14,7 +14,9 @@ from __future__ import annotations
 import argparse
 import html
 import re
+import socket
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -24,6 +26,9 @@ import feedparser
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "hugo" / "content" / "ai-daily"
 TZ = ZoneInfo("Asia/Shanghai")
+
+# A hung feed should fail the run instead of stalling the workflow.
+socket.setdefaulttimeout(20)
 
 # (display name, feed URL, max entries). Add or remove sources freely: the
 # section is regenerated from this list every day.
@@ -88,14 +93,17 @@ def collect(skip_links: set[str]) -> tuple[dict[str, list[dict]], int, int]:
     failed = 0
 
     for name, url, limit in FEEDS:
-        try:
-            parsed = feedparser.parse(url)
-        except Exception as error:  # network or malformed feed
-            print(f"warn: {name}: {error}", file=sys.stderr)
-            failed += 1
-            continue
+        parsed = None
+        for attempt in range(2):
+            try:
+                parsed = feedparser.parse(url)
+                if parsed.entries:
+                    break
+            except Exception as error:  # network or malformed feed
+                print(f"warn: {name}: {error}", file=sys.stderr)
+            time.sleep(2)
 
-        if not parsed.entries:
+        if parsed is None or not parsed.entries:
             print(f"warn: {name}: no entries", file=sys.stderr)
             failed += 1
             continue
@@ -109,7 +117,9 @@ def collect(skip_links: set[str]) -> tuple[dict[str, list[dict]], int, int]:
 
             link = (entry.get("link") or "").strip()
             title = clean(entry.get("title", ""))
-            if not link or not title or link in skip_links:
+            if not link.startswith(("http://", "https://")) or not title:
+                continue
+            if link in skip_links:
                 continue
 
             key = re.sub(r"\s+", " ", title).lower()

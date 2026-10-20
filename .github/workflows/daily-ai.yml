@@ -15,7 +15,11 @@ concurrency:
 
 jobs:
   collect:
+    # Scheduled runs are always on the default branch; this also stops a
+    # manual dispatch from a feature branch deploying a branch build to Pages.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
     steps:
@@ -57,6 +61,7 @@ jobs:
     needs: collect
     if: needs.collect.outputs.changed == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       pages: write
