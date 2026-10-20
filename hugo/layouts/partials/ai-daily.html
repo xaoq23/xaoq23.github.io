@@ -1,33 +1,37 @@
 {{/*
-  Homepage AI daily teaser.
+  Homepage AI daily panel.
 
-  Reads the most recent posts from the `/ai-daily` section so the homepage
-  never needs a second content source. Cards sit in a horizontally scrollable
-  strip (trackpad / shift+wheel) and scale slightly on hover or keyboard focus.
+  Shows only the latest digest (one day), as a single large card whose inner
+  list scrolls independently. Hovering scales the whole panel; clicking it
+  routes to the /ai-daily/ section. The embedded Markdown has its anchors
+  stripped because the whole panel is one link.
 */}}
-{{ $dateFormat := site.Params.dateFormat | default "2006-01-02" }}
 {{ $section := site.GetPage "/ai-daily" }}
+{{ $latest := false }}
 {{ with $section }}
-  {{ with first 3 .RegularPages.ByDate.Reverse }}
+  {{ with .RegularPages.ByDate.Reverse }}
+    {{ $latest = index . 0 }}
+  {{ end }}
+{{ end }}
+{{ with $latest }}
+  {{ if eq (.Date.Format "2006-01-02") (now.Format "2006-01-02") }}
     <section class="home-section ai-daily" aria-labelledby="ai-daily-heading">
-      <div class="section-head">
-        <h2 class="section-heading" id="ai-daily-heading">{{ i18n "ai_daily.heading" }}</h2>
-        <a class="section-link" href="{{ $section.RelPermalink }}">{{ i18n "ai_daily.all" }} &rarr;</a>
-      </div>
-      <ul class="ai-daily-list">
-        {{ range . }}
-          <li class="ai-daily-item">
-            <a class="ai-daily-card" href="{{ .RelPermalink }}">
-              <time class="ai-daily-date" datetime="{{ .Date.Format "2006-01-02" }}">
-                {{- .Date.Format $dateFormat -}}
-              </time>
-              <h3 class="ai-daily-title">{{ .Title }}</h3>
-              <p class="ai-daily-summary">{{ .Summary | plainify | truncate 120 }}</p>
-              <span class="ai-daily-more">{{ i18n "ai_daily.read" }} &rarr;</span>
-            </a>
-          </li>
-        {{ end }}
-      </ul>
+      <a
+        class="ai-daily-panel"
+        href="{{ $section.RelPermalink }}"
+        aria-labelledby="ai-daily-heading">
+        <header class="ai-daily-panel-head">
+          <div>
+            <p class="ai-daily-kicker">{{ i18n "ai_daily.heading" }}</p>
+            <h2 class="ai-daily-panel-title" id="ai-daily-heading">{{ .Title }}</h2>
+            <p class="ai-daily-panel-meta">{{ .Summary | plainify }}</p>
+          </div>
+          <span class="ai-daily-panel-cta">{{ i18n "ai_daily.read" }} &rarr;</span>
+        </header>
+        <div class="ai-daily-scroll">
+          {{ .Content | replaceRE `<a\s[^>]*>` "" | replaceRE `</a>` "" | safeHTML }}
+        </div>
+      </a>
     </section>
   {{ end }}
 {{ end }}

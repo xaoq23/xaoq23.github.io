@@ -61,6 +61,9 @@ const result = spawnSync(bin, args, {
     TEMP: tmpDir,
     TMP: tmpDir,
     HUGO_CACHEDIR: cacheDir,
+    // Keep `now` in the author's timezone so today's AI digest check is stable
+    // on CI (UTC) and locally.
+    TZ: "Asia/Shanghai",
   },
 });
 process.exit(result.status ?? 1);

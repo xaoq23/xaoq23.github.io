@@ -14,7 +14,6 @@ pagination:
 
 ai_daily:
   heading: "AI 日报"
-  all: "全部日报"
   read: "阅读日报"
 
 list:
