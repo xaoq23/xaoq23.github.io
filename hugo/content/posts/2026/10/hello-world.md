@@ -17,20 +17,14 @@ The architecture is intentionally boring.
 
 1. **Hugo owns the page.** Routing, layouts, Markdown rendering, feeds and
    metadata all come out of Hugo.
-2. **React owns isolated widgets.** A React island may only mount inside a
-   container that Hugo marks with `data-island`. Nothing else.
+2. **No client-side framework.** No React, no SPA router, no hydration step.
+   The only JavaScript is a few lines of vanilla code that keep the theme in
+   sync.
 
 ## What that buys us
 
 - Every article is readable with JavaScript disabled.
-- The homepage ships a fixed, measurable amount of JavaScript.
+- No framework runtime to download, parse or hydrate.
 - There is never a client-side router to debug.
-
-```ts
-// islands only touch their own container
-for (const el of document.querySelectorAll('[data-island="bento"]')) {
-  createRoot(el).render(<Bento items={readItems(el)} />);
-}
-```
 
 That is the whole contract.

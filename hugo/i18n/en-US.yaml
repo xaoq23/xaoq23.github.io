@@ -7,13 +7,6 @@ home:
   all_posts: "All posts"
   portrait_alt: "Portrait of xaoq23"
 
-bento:
-  heading: "Currently"
-  link: "Read more"
-  threads:
-    one: "{{ .Count }} thread"
-    other: "{{ .Count }} threads"
-
 pagination:
   newer: "Newer"
   older: "Older"

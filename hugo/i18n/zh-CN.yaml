@@ -7,13 +7,6 @@ home:
   all_posts: "全部文章"
   portrait_alt: "xaoq23 的头像"
 
-bento:
-  heading: "近况"
-  link: "了解更多"
-  threads:
-    one: "{{ .Count }} 条线索"
-    other: "{{ .Count }} 条线索"
-
 pagination:
   newer: "较新"
   older: "较早"

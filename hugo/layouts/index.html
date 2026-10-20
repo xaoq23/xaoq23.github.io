@@ -32,8 +32,6 @@
       {{ end }}
     </section>
 
-    {{ partial "bento.html" . }}
-
     {{ $posts := where site.RegularPages "Section" "posts" }}
     {{ $latest := first 4 ($posts.ByDate.Reverse) }}
     {{ with $latest }}

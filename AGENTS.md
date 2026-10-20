@@ -1,7 +1,8 @@
 # AGENTS.md
 
-Personal blog. Hugo generates all content and static HTML; React + TypeScript
-provides isolated interactive "islands". Deployed to GitHub Pages via Actions.
+Bilingual personal blog. Hugo generates every page and all static HTML; there
+is **no client-side framework**, no islands and no client-side routing.
+Deployed to GitHub Pages via Actions.
 
 Read this file before making changes. If a rule here conflicts with a request,
 surface the conflict instead of silently breaking the architecture.
@@ -17,37 +18,37 @@ rendered by both languages — there is no per-article translation work.
 
 ## 1. Stack
 
-| Layer           | Choice                                          |
-| --------------- | ----------------------------------------------- |
-| Site generator  | Hugo extended >= 0.140 (CI pins 0.168.0)         |
-| Theme base      | Blowfish v3.9.0, vendored and modified in place  |
-| Interactivity   | React 19 + TypeScript 5, built with Vite 8       |
-| Animation       | Framer Motion (inside islands only)              |
-| Package manager | pnpm 12                                          |
-| CI/CD           | GitHub Actions -> GitHub Pages                   |
+| Layer           | Choice                                              |
+| --------------- | --------------------------------------------------- |
+| Site generator  | Hugo extended >= 0.140 (CI pins 0.168.0)             |
+| Theme base      | Blowfish v3.9.0, vendored and modified in place      |
+| Styling         | Hugo Pipes + `tokens.css`; theme Tailwind precompiled |
+| Scripts         | Node 22 for check/dev wrappers only, no dependencies |
+| CI/CD           | GitHub Actions -> GitHub Pages                       |
 
-Do not add a second UI framework, a CSS-in-JS runtime, or a client-side router.
+There are **no npm dependencies**. pnpm is only a convenient script runner; CI
+calls the Node scripts directly. Do not reintroduce React, Vite, TypeScript or
+any other client-side framework.
 
 ---
 
 ## 2. Architecture contract (non-negotiable)
 
-**Hugo owns the page.** Routing, layouts, Markdown rendering, SEO/meta tags,
-navigation, footer, article body, RSS, sitemap, syntax highlighting.
-
-**React owns isolated widgets.** A React island may only render inside a
-container that Hugo explicitly marks. Islands never control global layout.
+**Hugo owns everything.** Routing, layouts, Markdown rendering, SEO/meta tags,
+navigation, footer, article body, feeds, sitemap, syntax highlighting and all
+page interactivity that can be expressed in HTML/CSS.
 
 Rules:
-- No React in article prose, nav, footer, or listing pages rendered by Hugo.
-- Every island is independently mountable and independently lazy-loadable.
-- An island must render meaningful fallback HTML (from Hugo) before hydration.
-- Islands communicate with the page only through DOM attributes and events,
-  never through a global store.
-- No client-side routing. Navigation is always a full Hugo page load.
-
-If a feature can be done with HTML/CSS plus a few lines of vanilla JS, do that
-instead of adding an island.
+- No client-side framework, no hydration, no client-side router.
+- No `data-island` containers, no Vite manifest, no framework bundles.
+- Every page must be fully readable with JavaScript disabled.
+- Prefer HTML/CSS solutions (links, `:hover`, `:focus-visible`, `<details>`,
+  `scroll-behavior`, form-free filtering) over JavaScript.
+- A small amount of vanilla JS is allowed only for progressive enhancement
+  that HTML/CSS cannot provide. It must be readable, dependency-free and
+  degrade gracefully.
+- `pnpm check` fails if generated HTML still references island or framework
+  code.
 
 ---
 
@@ -71,13 +72,10 @@ instead of adding an island.
   format live in `[languages.<lang>.params]` in `hugo/hugo.toml`. Language
   params are merged over shared `[params]`, so shared values (name, email,
   links) are declared once.
-- **Structured content.** `hugo/data/bento.yaml` is keyed by language; templates
-  read `index hugo.Data.bento site.Language.Lang` with an `en` fallback.
 - **Dates.** Format with `site.Params.dateFormat` and keep an ISO value in the
   `<time datetime>` attribute.
 - **Links.** Use `relLangURL` for internal links so both languages keep their
-  prefixes. Never hardcode `/en/` or `/zh/` in templates; data files may use
-  absolute paths because they are language-keyed content.
+  prefixes. Never hardcode `/en/` or `/zh/` in templates.
 - **Discovery.** The header language switcher and `hreflang` alternates work
   because both content trees contain the same relative paths; Hugo pairs them
   automatically. Do not break that by renaming files in only one tree.
@@ -94,72 +92,57 @@ instead of adding an island.
 │   ├── i18n/                    # en-US.yaml / zh-CN.yaml (UI copy)
 │   ├── layouts/                 # project templates; overrides theme layouts
 │   │   ├── _default/            # baseof, single, list
-│   │   └── partials/            # extend-head, bento, island-script, pagination
+│   │   └── partials/            # extend-head, favicons, pagination
 │   ├── assets/
 │   │   ├── css/tokens.css       # SINGLE SOURCE of design tokens
-│   │   └── css/main.css         # site styles; tokens only, no raw values
-│   ├── data/bento.yaml          # homepage bento content, keyed by language
+│   │   ├── css/main.css         # site styles; tokens only, no raw values
+│   │   └── img/portrait.png     # homepage portrait (fingerprinted)
 │   ├── static/404.html          # bilingual root 404 for GitHub Pages
-│   ├── static/islands/          # generated by Vite — do not edit or commit
 │   ├── themes/blowfish/         # vendored theme (v3.9.0), modified in place
 │   └── hugo.toml
-├── islands/                     # React + TS source (Vite project)
-│   ├── src/entries/             # one file per island entry point
-│   ├── src/components/          # components + CSS Modules
-│   ├── src/lib/                 # shared types
-│   ├── vite.config.ts
-│   ├── tsconfig.json
-│   ├── pnpm-workspace.yaml      # pnpm settings; Windows workarounds, see §11
-│   └── package.json
-├── scripts/                     # hugo/dev-hugo/islands/check wrappers
+├── scripts/                     # hugo/dev-hugo/check wrappers
 │   └── lib/sync-content.mjs     # content/ -> content-en/ mirror
-├── assert/img.png               # source image for the site icons
+├── assert/img.png               # source image for icons + portrait
 ├── .github/workflows/deploy.yml
 ├── package.json
 └── AGENTS.md
 ```
 
-- Design tokens live only in `hugo/assets/css/tokens.css`. Islands import that
-  same file through the `@tokens` Vite alias. Never duplicate colour/spacing
-  values.
-- Vite builds into `hugo/static/islands/` and emits `manifest.json`.
-  `layouts/partials/island-script.html` reads the manifest and injects the
-  hashed `<script>` (and island CSS) only on pages that use that island.
-- The vendored theme is a normal Hugo theme (no Go modules, no submodule).
-  Prefer overriding files under `hugo/layouts/`; edit `hugo/themes/blowfish/`
+- Design tokens live only in `hugo/assets/css/tokens.css`. Never duplicate
+  colour/spacing values in templates or other stylesheets.
+- Prefer overriding files under `hugo/layouts/`; edit `hugo/themes/blowfish/`
   only when the change is genuinely theme-wide.
+- The vendored theme's Tailwind CSS is **precompiled**. New utility classes
+  used in Hugo templates will not exist unless the theme CSS is rebuilt, so
+  write new Hugo-facing styles with the tokens above instead of inventing
+  Tailwind classes.
 
 ---
 
 ## 4. Commands
 
 ```bash
-# One-time install
-pnpm --dir islands install
+# Local dev server (mirrors content on change)
+pnpm dev:hugo                  # http://localhost:1313
 
-# Local dev (two terminals)
-pnpm dev:hugo                  # site at http://localhost:1313
-pnpm dev:islands               # rebuilds islands on change
-
-# Production build (order matters: islands first, then Hugo)
-pnpm build:islands
-pnpm build:hugo                # hugo --minify --cleanDestinationDir --source hugo
-pnpm build                     # both, in order
-
-# Type check
-pnpm typecheck
+# Production build
+pnpm build                     # hugo --minify --cleanDestinationDir --source hugo
 
 # Full local verification (must pass before pushing)
 pnpm check
 ```
 
-`pnpm check` runs, in order: `tsc --noEmit`, the Vite island build, the Hugo
-build (which mirrors `content/` first), a link check over `hugo/public/`, a
-content-mirror sanity check, and an island payload report. CI runs the same
-command, so green locally means green deploy.
+There is nothing to install: the repository has no npm dependencies. `pnpm` is
+optional — the equivalent commands are `node scripts/dev-hugo.mjs`,
+`node scripts/hugo.mjs --minify --cleanDestinationDir --source hugo` and
+`node scripts/check.mjs`.
 
-`make check` / `make build` / `make dev` are thin wrappers around the pnpm
-scripts; pnpm is the source of truth.
+`pnpm check` runs: Hugo build (mirrors `content/` first) → link check over the
+output directory → content-mirror sanity check → client-side check (no island
+or framework code). CI runs the same script.
+
+`make check` / `make build` / `make dev` are thin wrappers; the Node scripts are
+the source of truth.
 
 `scripts/hugo.mjs` resolves Hugo from `$HUGO_BIN`, then `.tools/hugo/`, then
 `PATH`, and pins Hugo's temp/cache directories under `.cache/`.
@@ -173,10 +156,10 @@ high-saturation accent, generous whitespace, restrained motion.
 
 `hugo/assets/css/tokens.css` is the source of truth. It defines, among others:
 
-- `--font-sans` (Inter), `--font-mono` (JetBrains Mono)
+- `--font-sans` (Inter + CJK fallbacks), `--font-mono` (JetBrains Mono)
 - `--text-base` / `--text-scale`; sizes are derived with `calc()`
 - `--leading-body`, `--leading-snug`, `--leading-tight`
-- `--measure` (44rem reading column), `--measure-wide`
+- `--measure` (44rem reading column), `--measure-wide`, `--text-hero`
 - `--space-unit` (8px) and `--space-1 … --space-16`
 - light palette (`--color-bg`, `--color-fg`, `--color-muted`,
   `--color-border`, `--color-accent`, `--color-code-bg`, …)
@@ -191,54 +174,26 @@ Hard rules:
 - Dark mode is required. The contract is `data-theme` on `<html>` plus
   `localStorage`. Blowfish owns the toggle UI and writes `html.dark`; a small
   vanilla script in `partials/extend-head.html` mirrors that onto
-  `data-theme`. React must never own theme state.
-- No layout shift on load: reserve space for islands via CSS `min-height`
-  (`.bento-grid[data-island]`).
-- The vendored theme's Tailwind CSS is **precompiled**. New utility classes
-  used in Hugo templates will not exist unless the theme CSS is rebuilt, so
-  write new Hugo-facing styles with the tokens above instead of inventing
-  Tailwind classes.
+  `data-theme`.
+- No layout shift on load: images carry width/height; there is no hydration
+  step.
+- New colours or spacing values go into `tokens.css`, never inline.
 
 ---
 
-## 6. Island conventions
+## 6. Client-side JavaScript rules
 
-One entry per island in `islands/src/entries/<name>.tsx`:
+Default answer: **write no JavaScript.**
 
-```tsx
-import { createRoot } from "react-dom/client";
-import { Bento } from "../components/Bento";
-import "@tokens/tokens.css";
-
-for (const el of document.querySelectorAll<HTMLElement>('[data-island="bento"]')) {
-  createRoot(el).render(<Bento items={JSON.parse(el.dataset.items ?? "[]")} />);
-}
-```
-
-Rules:
-- Mount target is always `[data-island="<name>"]`, rendered by a Hugo partial.
-- Scripts are ES modules injected from the manifest; never inline large JS.
-- Lazy-load below-the-fold islands via dynamic `import()` on an
-  `IntersectionObserver` (not yet needed for `bento`, which is above the fold).
-- Prefer `framer-motion`'s `AnimatePresence` for list/filter transitions;
-  avoid animation on initial page load.
-- CSS: use CSS Modules inside islands. Tailwind is reserved for Hugo
-  templates. Both consume the tokens file — no raw hex values in island
-  styles.
-- Accessibility is required: keyboard operable, focus-visible styles,
-  `aria-*` on dialogs, respect `prefers-reduced-motion`.
-- Keep every island entry independently loadable; do not share a runtime
-  bundle between islands.
-
-Approved islands (do not add others without updating this list):
-1. `bento` — homepage project/skills grid with hover states. **Implemented.**
-2. `search` — ⌘K global search over a Hugo-generated JSON index. Planned.
-3. `post-filter` — tag/year filtering with animated layout transitions. Planned.
-4. Shortcode widgets: `tabs`, `accordion`, `interactive-demo`. Planned.
-
-Adding an island means: new entry file, new Hugo partial that renders both
-fallback markup and the manifest script, data passed via `data-*`, and an entry
-in this list.
+- If a feature needs interactivity, try HTML/CSS first: `<details>`,
+  `:target`, `:focus-within`, CSS transitions, form-free anchors.
+- If JavaScript is unavoidable, use plain vanilla ES modules in
+  `hugo/assets/js/`, loaded through Hugo Pipes (`js.Build` / `fingerprint`), and
+  only on pages that need it.
+- No frameworks, no hydration, no client-side router, no global store.
+- Keep the script small, accessible (keyboard/focus, `aria-*`) and respectful
+  of `prefers-reduced-motion`.
+- Never reintroduce `data-island`, Vite manifests or an `islands/` project.
 
 ---
 
@@ -251,8 +206,7 @@ in this list.
 - Front matter (YAML): `title`, `date`, `lastmod`, `tags`, `categories`,
   `summary`, `draft`, optional `cover`. The same title/summary is shown by both
   language sites, so write them for the article, not for a locale.
-- Every post needs a `summary`; it feeds listing pages and search.
-- Interactive shortcodes are used sparingly, at most 2 per article.
+- Every post needs a `summary`; it feeds listing pages.
 - Image assets go under `hugo/content/posts/.../<slug>/` as page bundles; the
   mirror copies them too.
 - Never hand-edit `hugo/public/`, `hugo/content-en/`, or any generated file.
@@ -263,16 +217,14 @@ in this list.
 
 - `main` is the only deploy branch. Push to `main` triggers
   `.github/workflows/deploy.yml`.
-- Workflow order: checkout -> pnpm install -> Hugo install -> `pnpm check`
-  (which builds islands first, then Hugo) -> configure Pages -> upload
-  `hugo/public` -> `deploy-pages`.
+- Workflow order: checkout -> setup Node -> setup Hugo -> `node
+  scripts/check.mjs` -> configure Pages -> upload `hugo/public` -> deploy.
 - A red `pnpm check` stops the deploy. Do not bypass it.
 - Pages source must be set to **GitHub Actions** in repo settings.
 - `baseURL` in `hugo.toml` must exactly match the production URL, including any
   subpath. This is a user site (`xaoq23.github.io`), so there is no subpath.
 - Custom domain is configured via `hugo/static/CNAME` plus a DNS CNAME record.
-- `hugo/static/islands/` is generated output and is gitignored; CI always
-  builds it before Hugo.
+- `hugo/content-en/` is generated output and is gitignored; CI builds it.
 
 ---
 
@@ -282,64 +234,54 @@ A change is complete only when all of the following hold:
 
 - [ ] `pnpm check` passes locally.
 - [ ] `hugo --minify` produces zero warnings for both languages.
+- [ ] No island markup, framework bundle or client-side router was introduced.
 - [ ] Content mirror is clean: authored and mirrored file counts match, and
       every new UI string exists in both i18n files.
-- [ ] `tsc --noEmit` is clean; no `any` added without a comment justifying it.
-- [ ] No React code path reaches nav, footer, or article prose.
-- [ ] Total island JS shipped on the homepage is under **72 KB gzipped**
-      (React 19 + ReactDOM's production runtime is ~66 KB; the budget was
-      raised from 60 KB deliberately, do not raise it again without a decision).
+- [ ] Pages render correctly with JavaScript disabled.
 - [ ] Lighthouse mobile: Performance >= 90, Accessibility >= 95.
 - [ ] Dark mode checked manually; no flash of wrong theme on reload.
 - [ ] New colors or spacing values were added to `tokens.css`, not inline.
-- [ ] Any new island was registered in section 6 of this file.
 
 ---
 
 ## 10. Do not
 
-- Do not introduce SSR, a meta-framework, or a client-side router.
+- Do not introduce SSR, a meta-framework, a client-side router or a JS
+  framework.
+- Do not reintroduce React, Vite, TypeScript build steps or an `islands/`
+  project.
 - Do not add a runtime CSS-in-JS library.
 - Do not commit `node_modules/`, `public/`, `.hugo_build.lock`, `.tools/`,
-  `.cache/`, `hugo/static/islands/`, or `hugo/content-en/`.
+  `.cache/`, or `hugo/content-en/`.
 - Do not hardcode colors, font sizes, or spacing outside `tokens.css`.
-- Site icons derive from `assert/img.png` via `scripts/make-favicons.py`
-  (Pillow). Never hand-edit the generated PNG/ICO files in `hugo/static/`;
-  replace the source image and regenerate.
-- Do not rewrite Hugo-rendered content in React "for consistency".
-- Do not upgrade Hugo, React, or Vite major versions as part of an unrelated
-  task.
+- Site icons and the portrait derive from `assert/img.png`; replace the source
+  and regenerate rather than hand-editing generated PNG/ICO files.
+- Do not upgrade Hugo major versions as part of an unrelated task.
 
 ---
 
 ## 11. Environment notes
 
-- Windows + Node 25 + pnpm 12: `islands/pnpm-workspace.yaml` sets
-  `nodeLinker: hoisted` and `packageImportMethod: copy`. The default isolated
-  layout creates junctions that Node's ESM resolver does not follow here
-  (Vite's `rolldown` dependency looks missing), and hardlink imports crash the
-  installer. Do not remove those settings; they are harmless on Linux/CI.
 - Hugo is not installed system-wide on the author's machine; the binary lives
   in `.tools/hugo/` (gitignored). CI installs it via `peaceiris/actions-hugo`.
-- Vite runs a Windows-only `net use` probe while loading its config. In
-  restricted sandboxes that blocks process spawning; outside a sandbox this is
-  a non-issue.
+- `scripts/hugo.mjs` pins Hugo's temp/cache directories under `.cache/` because
+  the OS temp directory is not always writable on Windows.
+- There are no npm dependencies, so no install step is needed. pnpm only runs
+  the scripts; CI invokes Node directly.
 
 ---
 
 ## 12. Current state / known gaps
 
-Implemented: vendored theme + project overrides, token-driven CSS, custom
-homepage with the 「全球编程能力下降一万倍，只有我保持不变？！」 hero, editorial post
-list, pagination, bento island with Hugo fallback and manifest-driven script
-injection, bilingual chrome as peer subpaths (English at `/en/`, Chinese at
-`/zh/`, root redirect to `/zh/`) with single-source articles mirrored into
-`hugo/content-en/`, localized dates and bento data, language switcher +
-hreflang, bilingual root 404, email (`2105002580@qq.com`) in the homepage hero,
-the about pages and Blowfish's author block, link checking, content-mirror
-reporting, deploy workflow.
+Implemented: vendored theme + project overrides, token-driven CSS, bilingual
+chrome as peer subpaths (English at `/en/`, Chinese at `/zh/`, root redirect to
+`/zh/`) with single-source articles mirrored into `hugo/content-en/`, custom
+homepage with the 「全球编程能力下降一万倍，只有我保持不变？！」 hero and a
+fingerprinted portrait, editorial post list, pagination, localized dates,
+language switcher + hreflang, bilingual root 404, email
+(`2105002580@qq.com`) in the homepage hero, the about pages and Blowfish's
+author block, link checking, client-side checks, deploy workflow.
 
-Not implemented yet: `search`, `post-filter`, shortcode widgets, automated
-Lighthouse checks. Tag/category pages currently use the theme's own term
-layout and will be restyled when `post-filter` lands; their labels are already
-translated by the theme.
+Not implemented: search and tag/year filtering. Both were previously planned as
+React islands and were removed with the framework; revisit only with a
+dependency-free approach. Tag/category pages use the theme's own term layout.

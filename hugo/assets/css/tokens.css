@@ -3,8 +3,6 @@
  *
  * Rules:
  *  - Every colour, font, spacing and motion value used anywhere lives here.
- *  - Islands import this same file (Vite alias `@tokens`), so React never
- *    introduces a parallel palette.
  *  - Spacing is expressed as multiples of --space-unit (8px). Do not add raw
  *    pixel spacing values in other stylesheets.
  *  - The "theme bridge" block at the bottom re-maps the vendored Blowfish

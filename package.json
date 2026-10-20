@@ -1,16 +1,12 @@
 {
   "name": "my-blog-website",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packageManager": "pnpm@12.4.2",
-  "description": "Personal blog: Hugo for pages, React islands for isolated widgets.",
+  "description": "Bilingual personal blog built with Hugo and deployed to GitHub Pages.",
   "scripts": {
     "dev:hugo": "node scripts/dev-hugo.mjs",
-    "dev:islands": "node scripts/islands.mjs dev",
-    "build": "node scripts/islands.mjs build && node scripts/hugo.mjs --minify --cleanDestinationDir --source hugo",
-    "build:islands": "node scripts/islands.mjs build",
-    "build:hugo": "node scripts/hugo.mjs --minify --cleanDestinationDir --source hugo",
-    "typecheck": "node scripts/islands.mjs typecheck",
+    "build": "node scripts/hugo.mjs --minify --cleanDestinationDir --source hugo",
     "check": "node scripts/check.mjs"
   }
 }

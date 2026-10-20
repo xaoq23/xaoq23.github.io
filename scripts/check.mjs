@@ -2,21 +2,17 @@
 /**
  * Full local verification, the one command CI and humans share:
  *
- *   1. type check        (islands/tsc --noEmit)
- *   2. islands build     (Vite -> hugo/static/islands + manifest)
- *   3. Hugo build        (hugo --minify --source hugo)
- *   4. link check        (every local href/src in hugo/public resolves)
- *   5. island budget     (reports gzipped homepage island JS)
+ *   1. Hugo build        (mirrors content/ first, then renders both languages)
+ *   2. link check        (every local href/src in the public directory resolves)
+ *   3. content mirror    (authored and mirrored file counts match)
+ *   4. client-side       (no islands / framework bundles are referenced)
  *
- * Build order matters: Hugo reads the Vite manifest to emit hashed script tags.
- *
- * `SITE_OUT_DIR=.cache/verify pnpm check` writes the site elsewhere, which is
- * useful while `pnpm dev:hugo` is running (it also renders into hugo/public).
+ * `SITE_OUT_DIR=.cache/verify node scripts/check.mjs` writes the site
+ * elsewhere, which is useful while `pnpm dev:hugo` is running.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, extname, join, resolve } from "node:path";
-import { gzipSync } from "node:zlib";
 
 const root = resolve(import.meta.dirname, "..");
 const outDirOverride = process.env.SITE_OUT_DIR
@@ -24,7 +20,6 @@ const outDirOverride = process.env.SITE_OUT_DIR
   : null;
 const publicDir = outDirOverride ?? join(root, "hugo", "public");
 const destinationArgs = outDirOverride ? ["--destination", publicDir] : [];
-const BUDGET_BYTES = 72 * 1024;
 
 const failures = [];
 const started = Date.now();
@@ -58,17 +53,7 @@ function walk(dir) {
 }
 
 // ---------------------------------------------------------------------------
-// 1. Type check
-// ---------------------------------------------------------------------------
-const typecheckOk = step("type check (tsc --noEmit)", join(root, "scripts", "islands.mjs"), ["typecheck"]);
-
-// ---------------------------------------------------------------------------
-// 2. Islands build
-// ---------------------------------------------------------------------------
-const islandsOk = step("islands build (vite)", join(root, "scripts", "islands.mjs"), ["build"]);
-
-// ---------------------------------------------------------------------------
-// 3. Hugo build
+// 1. Hugo build
 // ---------------------------------------------------------------------------
 const hugoOk = step("hugo build (--minify)", join(root, "scripts", "hugo.mjs"), [
   "--minify",
@@ -81,7 +66,7 @@ const hugoOk = step("hugo build (--minify)", join(root, "scripts", "hugo.mjs"), 
 ]);
 
 // ---------------------------------------------------------------------------
-// 4. Link check
+// 2. Link check
 // ---------------------------------------------------------------------------
 heading("▸ link check");
 
@@ -112,14 +97,17 @@ function resolveTarget(pageFile, url) {
 }
 
 const attrPattern = /\b(?:href|src)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gi;
+const htmlFiles = existsSync(publicDir)
+  ? walk(publicDir).filter((candidate) => candidate.endsWith(".html"))
+  : [];
 let checkedLinks = 0;
 const broken = [];
 
 if (!existsSync(publicDir)) {
-  failures.push("link check (no hugo/public)");
-  console.error("  hugo/public does not exist");
+  failures.push("link check (no output directory)");
+  console.error(`  ${publicDir} does not exist`);
 } else {
-  for (const file of walk(publicDir).filter((candidate) => candidate.endsWith(".html"))) {
+  for (const file of htmlFiles) {
     const html = readFileSync(file, "utf8");
     for (const match of html.matchAll(attrPattern)) {
       const url = match[1] ?? match[2] ?? match[3] ?? "";
@@ -143,16 +131,13 @@ if (!existsSync(publicDir)) {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Translation coverage
+// 3. Content mirror
 // ---------------------------------------------------------------------------
 heading("▸ content mirror");
 
 const contentDir = join(root, "hugo", "content");
 const mirrorDir = join(root, "hugo", "content-en");
 if (existsSync(contentDir)) {
-  // Articles are authored once and mirrored into the English content tree by
-  // scripts/lib/sync-content.mjs (run before every Hugo build). The counts must
-  // match; a mismatch means the mirror is stale or the sync failed.
   const authored = walk(contentDir).filter((file) => file.endsWith(".md")).length;
   const mirrored = existsSync(mirrorDir)
     ? walk(mirrorDir).filter((file) => file.endsWith(".md")).length
@@ -167,51 +152,23 @@ if (existsSync(contentDir)) {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Island payload report
+// 4. Client-side code
 // ---------------------------------------------------------------------------
-heading("▸ island payload");
+heading("▸ client-side");
 
-function gzippedSize(file) {
-  return gzipSync(readFileSync(file), { level: 9 }).length;
-}
+const islandPages = htmlFiles.filter((file) => {
+  const html = readFileSync(file, "utf8");
+  return html.includes("data-island") || html.includes("/islands/");
+});
 
-function homepageIslandScripts() {
-  // Both languages are homepages now (`/en/`, `/zh/`); the site root is a
-  // redirect. Measure the union of the scripts those pages load.
-  const homes = [
-    join(publicDir, "en", "index.html"),
-    join(publicDir, "zh", "index.html"),
-    join(publicDir, "index.html"),
-  ].filter((file) => existsSync(file));
-
-  const urls = new Set();
-  for (const home of homes) {
-    const html = readFileSync(home, "utf8");
-    for (const match of html.matchAll(/<script[^>]+src="?([^"\s>]*\/islands\/[^"\s>]+)"?[^>]*>/gi)) {
-      urls.add(match[1]);
-    }
+if (islandPages.length > 0) {
+  failures.push("client-side (islands found)");
+  console.error(`  ${islandPages.length} page(s) still reference island markup:`);
+  for (const file of islandPages.slice(0, 10)) {
+    console.error(`    ${file.slice(publicDir.length + 1)}`);
   }
-  return [...urls].map((url) => join(publicDir, decodeURIComponent(url).replace(/^\//, "")));
-}
-
-const islandScripts = homepageIslandScripts();
-let totalIslandBytes = 0;
-for (const script of islandScripts) {
-  if (!existsSync(script)) {
-    failures.push("island payload (missing script)");
-    console.error(`  missing script referenced by homepage: ${script}`);
-    continue;
-  }
-  const size = gzippedSize(script);
-  totalIslandBytes += size;
-  console.log(`  ${(size / 1024).toFixed(1)} KB gzip  ${script.slice(publicDir.length + 1)}`);
-}
-console.log(
-  `  homepage island JS: ${(totalIslandBytes / 1024).toFixed(1)} KB gzip ` +
-    `(budget ${(BUDGET_BYTES / 1024).toFixed(0)} KB)`,
-);
-if (totalIslandBytes > BUDGET_BYTES) {
-  console.warn("  WARNING: over the agreed budget — see AGENTS.md §9 before shipping.");
+} else {
+  console.log("  ok (no islands or framework bundles referenced)");
 }
 
 // ---------------------------------------------------------------------------
@@ -223,8 +180,8 @@ if (failures.length > 0) {
   console.error(`✗ check failed in ${elapsed}s: ${failures.join(", ")}`);
   process.exit(1);
 }
-if (!typecheckOk || !islandsOk || !hugoOk) {
-  console.error(`✗ build steps failed in ${elapsed}s`);
+if (!hugoOk) {
+  console.error(`✗ build step failed in ${elapsed}s`);
   process.exit(1);
 }
 console.log(`✓ check passed in ${elapsed}s`);

@@ -1,5 +1,5 @@
 # Site configuration — Hugo owns all content, routing and static HTML.
-# React islands are mounted only on elements Hugo marks with data-island.
+# No client framework, no islands, no client-side routing.
 #
 # The site is bilingual: both languages live in peer subpaths, `/en/` and
 # `/zh/`. Chinese is the default language, so Hugo's automatic root redirect
