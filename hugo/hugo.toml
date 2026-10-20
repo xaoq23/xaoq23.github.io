@@ -139,6 +139,11 @@ summaryLength = 0
         bio = "记录编程、工具与 Web 构建中那些莫名其妙的思考。"
 
     [[languages.zh.menus.main]]
+      name = "首页"
+      pageRef = "/"
+      weight = 5
+
+    [[languages.zh.menus.main]]
       name = "文章"
       pageRef = "posts"
       weight = 10
@@ -170,6 +175,11 @@ summaryLength = 0
       [languages.en.params.author]
         headline = "Global Coding Skills Dropped 10,000× — Only I Stayed the Same?!"
         bio = "Notes on programming, tooling and building things on the web."
+
+    [[languages.en.menus.main]]
+      name = "Home"
+      pageRef = "/"
+      weight = 5
 
     [[languages.en.menus.main]]
       name = "Posts"
