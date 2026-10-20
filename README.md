@@ -68,27 +68,19 @@ would otherwise inspect development HTML and can race with the server. Or run
 
 ## Daily AI digest
 
-`.github/workflows/daily-ai.yml` runs every day at **00:00 UTC (08:00
-Asia/Shanghai)**:
-
-1. installs `scripts/requirements.txt` (feedparser) and runs
-   `scripts/ai_daily.py`;
-2. the script fetches five AI feeds and writes
-   `hugo/content/ai-daily/YYYY-MM-DD.md` (an existing file is left untouched);
-3. the job commits the new post with the `github-actions[bot]` identity and
-   then builds and deploys the site **in the same workflow**. GitHub does not
-   start other workflows for commits pushed with `GITHUB_TOKEN`, so the digest
-   workflow deploys itself instead of relying on the push event.
-
-Manual run: trigger **Daily AI digest** from the Actions tab, or locally:
+`scripts/ai_daily.py` builds the digest locally on demand — there is **no
+scheduled workflow**. Run:
 
 ```bash
 pip install -r scripts/requirements.txt
+python scripts/ai_daily.py                  # today, Asia/Shanghai
 python scripts/ai_daily.py --date 2026-10-20 --force
 ```
 
-Feeds live in the `FEEDS` list at the top of `scripts/ai_daily.py`; the script
-also skips links that appeared in the previous days' digests.
+It writes `hugo/content/ai-daily/YYYY-MM-DD.md`; commit and push normally and
+the regular deploy workflow publishes it. An existing date is skipped unless
+`--force` is passed. Feeds live in the `FEEDS` list at the top of the script,
+and links already used in the previous three days are skipped.
 
 ## Layout
 

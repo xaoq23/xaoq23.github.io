@@ -7,6 +7,7 @@
   "scripts": {
     "dev:hugo": "node scripts/dev-hugo.mjs",
     "build": "node scripts/hugo.mjs --minify --cleanDestinationDir --source hugo",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "ai:daily": "python scripts/ai_daily.py"
   }
 }
