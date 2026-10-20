@@ -1,7 +1,7 @@
 ---
-title: "对RAII的一些想法"
-date: 2026-10-18
-lastmod: 2026-10-18
+title: "LLVM --一个伟大的开源基础设施"
+date: 2026-10-20
+lastmod: 2026-10-20
 tags: ["编译器优化", "llvm"]
 categories: ["笔记"]
 summary: "对llvm的认知。"
