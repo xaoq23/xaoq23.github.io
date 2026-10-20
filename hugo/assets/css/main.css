@@ -340,6 +340,86 @@ main#main-content {
 }
 
 /* -------------------------------------------------------------------------
+ * 5b. AI daily teaser
+ *
+ * A horizontal, scroll-snapped strip. Hover/focus scales the card; the strip
+ * itself is controlled by trackpad or shift+wheel scrolling.
+ * ---------------------------------------------------------------------- */
+
+.ai-daily-list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(16rem, 32vw, 22rem);
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-1);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+
+.ai-daily-item {
+  display: flex;
+  scroll-snap-align: start;
+}
+
+.ai-daily-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-raised);
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.ai-daily-card:hover,
+.ai-daily-card:focus-visible {
+  z-index: 1;
+  transform: scale(1.03);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+}
+
+.ai-daily-date {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-subtle);
+}
+
+.ai-daily-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg-strong);
+}
+
+.ai-daily-summary {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  color: var(--color-muted);
+}
+
+.ai-daily-more {
+  margin-top: auto;
+  padding-top: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+/* -------------------------------------------------------------------------
  * 6. Article
  * ---------------------------------------------------------------------- */
 
@@ -557,4 +637,8 @@ main#main-content {
     scroll-behavior: auto !important;
   }
 
+  .ai-daily-card:hover,
+  .ai-daily-card:focus-visible {
+    transform: none;
+  }
 }

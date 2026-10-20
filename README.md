@@ -82,6 +82,10 @@ the regular deploy workflow publishes it. An existing date is skipped unless
 `--force` is passed. Feeds live in the `FEEDS` list at the top of the script,
 and links already used in the previous three days are skipped.
 
+The homepage renders the latest three digests through
+`hugo/layouts/partials/ai-daily.html`: a horizontally scrollable strip whose
+cards scale up on hover or keyboard focus.
+
 ## Layout
 
 ```

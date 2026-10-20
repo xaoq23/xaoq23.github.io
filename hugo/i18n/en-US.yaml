@@ -12,5 +12,10 @@ pagination:
   older: "Older"
   status: "Page {{ .Page }} of {{ .Total }}"
 
+ai_daily:
+  heading: "AI Daily"
+  all: "All digests"
+  read: "Read digest"
+
 list:
   tags_label: "Tags"

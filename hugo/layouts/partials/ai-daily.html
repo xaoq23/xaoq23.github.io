@@ -1,0 +1,33 @@
+{{/*
+  Homepage AI daily teaser.
+
+  Reads the most recent posts from the `/ai-daily` section so the homepage
+  never needs a second content source. Cards sit in a horizontally scrollable
+  strip (trackpad / shift+wheel) and scale slightly on hover or keyboard focus.
+*/}}
+{{ $dateFormat := site.Params.dateFormat | default "2006-01-02" }}
+{{ $section := site.GetPage "/ai-daily" }}
+{{ with $section }}
+  {{ with first 3 .RegularPages.ByDate.Reverse }}
+    <section class="home-section ai-daily" aria-labelledby="ai-daily-heading">
+      <div class="section-head">
+        <h2 class="section-heading" id="ai-daily-heading">{{ i18n "ai_daily.heading" }}</h2>
+        <a class="section-link" href="{{ $section.RelPermalink }}">{{ i18n "ai_daily.all" }} &rarr;</a>
+      </div>
+      <ul class="ai-daily-list">
+        {{ range . }}
+          <li class="ai-daily-item">
+            <a class="ai-daily-card" href="{{ .RelPermalink }}">
+              <time class="ai-daily-date" datetime="{{ .Date.Format "2006-01-02" }}">
+                {{- .Date.Format $dateFormat -}}
+              </time>
+              <h3 class="ai-daily-title">{{ .Title }}</h3>
+              <p class="ai-daily-summary">{{ .Summary | plainify | truncate 120 }}</p>
+              <span class="ai-daily-more">{{ i18n "ai_daily.read" }} &rarr;</span>
+            </a>
+          </li>
+        {{ end }}
+      </ul>
+    </section>
+  {{ end }}
+{{ end }}

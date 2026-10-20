@@ -12,5 +12,10 @@ pagination:
   older: "较早"
   status: "第 {{ .Page }} / {{ .Total }} 页"
 
+ai_daily:
+  heading: "AI 日报"
+  all: "全部日报"
+  read: "阅读日报"
+
 list:
   tags_label: "标签"

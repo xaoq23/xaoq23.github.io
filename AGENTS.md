@@ -93,7 +93,7 @@ Rules:
 │   ├── i18n/                    # en-US.yaml / zh-CN.yaml (UI copy)
 │   ├── layouts/                 # project templates; overrides theme layouts
 │   │   ├── _default/            # baseof, single, list
-│   │   └── partials/            # extend-head, favicons, pagination
+│   │   └── partials/            # extend-head, favicons, pagination, ai-daily
 │   ├── assets/
 │   │   ├── css/tokens.css       # SINGLE SOURCE of design tokens
 │   │   ├── css/main.css         # site styles; tokens only, no raw values
